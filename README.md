@@ -46,4 +46,4 @@ Toate rapoartele de sprint se găsesc în folderul "Sprints" din acest repositor
 
 ## Recenzie
 
-Modalitatea preferată de primire a raportului de recenzie: poate fi trimis pe mail, catre denisa-cristina.lupu@s.unibuc.ro, sau pe teams, la aceeasi adresa.
+Modalitatea preferată de primire a raportului de recenzie: poate fi trimis pe mail, către denisa-cristina.lupu@s.unibuc.ro, sau pe teams, la aceeași adresă.
