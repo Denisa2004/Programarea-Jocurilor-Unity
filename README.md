@@ -22,7 +22,13 @@ Deschideți scena principală (de exemplu, "SampleScene").
 
 Apăsați butonul "Play" (iconița ▶) a editorului pentru a rula jocul.
 
+
+**Notă importantă pentru Review (Stadiu Sprint 1):**
+
+Componentele dezvoltate în acest sprint nu sunt încă integrate într-o singură scenă funcțională. Echipa a lucrat pe branch-uri Git separate, iar integrarea completă (jucător + obstacole + generare procedurală) este planificată pentru un sprint viitor, odată ce vom adăuga generarea procedurală a nivelului.
+
 ---
+
 
 ## Ce conține
 
