@@ -40,7 +40,7 @@ Structura inițială de foldere (Scene, Scripturi etc).
 
 Configurarea de bază a proiectului și a fișierelor .gitignore.
 
-O scenă de test ("SampleScene") cu elementele placeholder inițiale.
+O scenă de test ("MainMenu") cu elementele placeholder inițiale.
 
 ---
 
