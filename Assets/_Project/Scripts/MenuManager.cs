@@ -4,7 +4,6 @@ using UnityEngine.Audio; // pentru gestionarea sunetului
 
 public class MenuManager : MonoBehaviour
 {
-    // camp pentru submeniu de setari
     public GameObject SettingsPanel,Fullscreen,ExitFullscreen;
     public AudioMixer Volume;
 
@@ -26,8 +25,7 @@ public class MenuManager : MonoBehaviour
     }
     public void SetMusicVolume(float volume)
     {
-        // Valoarea Slider-ului (0.0001 la 1) trebuie convertita logaritmic (decibeli)
-        // Folosim Mathf.Log10(volume) * 20 pentru a obtine o scala lina
+        // valoarea Slider-ului trebuie convertita logaritmic
         Volume.SetFloat("MasterVolume", Mathf.Log10(volume) * 20);
     }
 
