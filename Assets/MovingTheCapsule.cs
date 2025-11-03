@@ -1,10 +1,10 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 
 public class MovingTheCapsule : MonoBehaviour
 {
-    // [SerializeField] face variabila vizibila �n Inspectorul Unity
+    // [SerializeField] face variabila vizibila în Inspectorul Unity
     // Se poate schimba viteza direct din Unity, fara sa mai intri in cod
     [SerializeField] private float moveSpeed = 8f;
 
