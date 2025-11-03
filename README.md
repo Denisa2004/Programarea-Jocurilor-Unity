@@ -18,7 +18,7 @@ Asigurați-vă că aveți instalată versiunea de Unity corectă. Dacă nu o ave
 
 Odată ce proiectul s-a deschis în Unity Editor, navigați în fereastra "Project" la folderul Assets -> Scenes.
 
-Deschideți scena principală (de exemplu, "SampleScene").
+Deschideți scena principală (de exemplu, "Main Menu").
 
 Apăsați butonul "Play" (iconița ▶) a editorului pentru a rula jocul.
 
