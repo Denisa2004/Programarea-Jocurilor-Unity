@@ -2,6 +2,8 @@
 
 Acest fișier conține instrucțiunile de bază pentru rularea și înțelegerea proiectului.
 
+---
+
 ## Cum se rulează proiectul
 
 Clonați acest repository folosind Git: git clone https://github.com/Denisa2004/Programarea-Jocurilor-Unity.git
