@@ -18,11 +18,17 @@ Asigurați-vă că aveți instalată versiunea de Unity corectă. Dacă nu o ave
 
 Odată ce proiectul s-a deschis în Unity Editor, navigați în fereastra "Project" la folderul Assets -> Scenes.
 
-Deschideți scena principală (de exemplu, "SampleScene").
+Deschideți scena principală (de exemplu, "Main Menu").
 
 Apăsați butonul "Play" (iconița ▶) a editorului pentru a rula jocul.
 
+
+**Notă importantă pentru Review (Stadiu Sprint 1):**
+
+Componentele dezvoltate în acest sprint nu sunt încă integrate într-o singură scenă funcțională. Echipa a lucrat pe branch-uri Git separate, iar integrarea completă (jucător + obstacole + generare procedurală) este planificată pentru un sprint viitor, odată ce vom adăuga generarea procedurală a nivelului.
+
 ---
+
 
 ## Ce conține
 
@@ -34,7 +40,7 @@ Structura inițială de foldere (Scene, Scripturi etc).
 
 Configurarea de bază a proiectului și a fișierelor .gitignore.
 
-O scenă de test ("SampleScene") cu elementele placeholder inițiale.
+O scenă de test ("MainMenu") cu elementele placeholder inițiale.
 
 ---
 
