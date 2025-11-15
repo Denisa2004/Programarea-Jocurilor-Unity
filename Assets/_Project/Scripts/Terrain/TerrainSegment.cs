@@ -9,7 +9,7 @@ public class TerrainSegment : MonoBehaviour
         Transform exitPoint = transform.Find("ExitPoint");
         if (exitPoint != null)
             return exitPoint.position;
-        return transform.position + transform.forward * 5f;
+        return transform.position + transform.forward * 15f;
     }
 
     public Vector3 GetStartPosition()
@@ -18,7 +18,7 @@ public class TerrainSegment : MonoBehaviour
         if (startPoint != null)
             return startPoint.position;
         //la inceputul segmentului
-        return transform.position - transform.forward * 5f;
+        return transform.position - transform.forward * 15f;
     }
 
     public Quaternion GetExitRotation()
