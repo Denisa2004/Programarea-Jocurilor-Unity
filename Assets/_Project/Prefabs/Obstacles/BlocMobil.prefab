@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1965854917133376499}
   - component: {fileID: 518534487340436412}
   - component: {fileID: 3049480368485140359}
+  - component: {fileID: 8425535191975433828}
   m_Layer: 0
   m_Name: BlocMobil
   m_TagString: Untagged
@@ -30,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.5, z: 5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 10, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -122,5 +123,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveAxis: {x: 1, y: 0, z: 0}
-  distance: 3
-  speed: 1.5
+  distance: 4.5
+  speed: 2
+--- !u!114 &8425535191975433828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2328388366065635438}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ee4837e294e5bf448d15172421d70ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
