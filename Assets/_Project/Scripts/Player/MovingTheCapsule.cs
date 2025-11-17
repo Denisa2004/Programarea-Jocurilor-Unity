@@ -21,7 +21,6 @@ public class MovingTheCapsule : MonoBehaviour
 
     void Start()
     {
-
         // Caut componenta Rigidbody atasata de ACELASI obiect si o salvez in variabila 'rb'
         rb = GetComponent<Rigidbody>();
     }
