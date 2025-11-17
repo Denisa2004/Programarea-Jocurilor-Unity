@@ -7,12 +7,19 @@ public class PlayerController : MonoBehaviour
     public float sideSpeed = 10f;
     public float forwardSpeed = 10f;
     public float forwardAcceleration = 10f;
-    public float jumpForce = 500f;
     public float raycastDistance = 1.1f;
+
+    [Header("Jetpack Settings")]
+    public float thrustForce = 25f;     
+    public float maxFuel = 1f;          
+    private float currentFuel;
+
     private InputAction moveAction;
     private Vector2 moveRead;
     private Rigidbody rb;
     public GameObject playerCamera;
+
+    private bool isJumpHeld = false; // stocheaza daca tinem apasat pe w
 
 
     void Start()
@@ -20,16 +27,20 @@ public class PlayerController : MonoBehaviour
         moveAction = InputSystem.actions.FindAction("Move");
         // Obtine componenta Rigidbody de pe acelasi GameObject si o stocheaza in rb
         rb = GetComponent<Rigidbody>();
+        currentFuel = maxFuel; // initializez combustibilul la maxim la start
     }
 
     void Update()
     {
         ReadInput();
 
-        // Daca tasta W este apasata si daca jucatorul este pe pamant se apeleaza functia Jump().
-        if (moveRead.y > 0.5f && IsGrounded())
+        //  Citim si stocam starea butonului de saritura 
+        isJumpHeld = moveRead.y > 0.5f;
+
+        // Reincarcam combustibilul daca suntem pe pamant si nu apasam W
+        if (IsGrounded() && !isJumpHeld)
         {
-            Jump();
+            currentFuel = maxFuel;
         }
 
         // Seteaza pozitia camerei relativ la jucator
@@ -38,18 +49,29 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Daca tinem W apasat si mai avem combustibil
+        if (isJumpHeld && currentFuel > 0f)
+        {
+            // Aplicam o forta continua in sus
+            // Folosim ForceMode.Acceleration ca sa ignore masa
+            rb.AddForce(Vector3.up * thrustForce, ForceMode.Acceleration);
+
+            // Consumam combustibil
+            currentFuel -= Time.fixedDeltaTime; // Scadem timpul cat a fost apasat
+        }
+
         // obtinem vectorul vitezei curente a Rigidbody-ului
         Vector3 currentVelocity = rb.linearVelocity;
         // Calculeaza viteza jucatorului in directia sa inainte
         float currentSpeedZ = Vector3.Dot(currentVelocity, transform.forward);
 
-        // Daca viteza curenta inainte este mai mica decat viteza maxima dorita se aplica accelerarea pentru atunci cand incepe jocul si player ul sta pe loc..
+        // Daca viteza curenta inainte este mai mica decat viteza maxima dorita se aplica accelerarea pentru atunci cand incepe jocul si player ul sta pe loc
         if (currentSpeedZ < forwardSpeed)
         {
             rb.AddForce(transform.forward * forwardAcceleration, ForceMode.Acceleration);
         }
 
-        // pentru miscarea laterala
+        // pentru miscarea laterala 
         Vector3 lateralForce = transform.right * moveRead.x * sideSpeed;
         rb.AddForce(lateralForce, ForceMode.Force);
     }
@@ -68,11 +90,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void Jump()
-    {
-        // Aplica o forta jumpForce instant pe axa Y
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-    }
 
     private bool IsGrounded()
     {

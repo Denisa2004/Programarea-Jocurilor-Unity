@@ -1207,8 +1207,9 @@ MonoBehaviour:
   sideSpeed: 10
   forwardSpeed: 10
   forwardAcceleration: 10
-  jumpForce: 3
   raycastDistance: 1
+  thrustForce: 25
+  maxFuel: 1.5
   playerCamera: {fileID: 961739749}
 --- !u!1 &1610421087
 GameObject:
