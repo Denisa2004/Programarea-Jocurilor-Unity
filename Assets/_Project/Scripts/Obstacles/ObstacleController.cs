@@ -9,7 +9,8 @@ public class ObstacleController : MonoBehaviour
         if(collision.gameObject.CompareTag("Player"))
         {
             Debug.Log("Player has collided with an obstacle!");
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            GameManager.Instance.GameOver();
+
         }
     }
 }
