@@ -1,15 +1,108 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement; // pentru schimbatul scenelor
-using UnityEngine.Audio; // pentru gestionarea sunetului
+using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
+using System.Collections.Generic;
 
 public class MenuManager : MonoBehaviour
 {
-    public GameObject SettingsPanel,Fullscreen,ExitFullscreen;
+    [Header("Referinte UI")]
+    public GameObject SettingsPanel;
+    public GameObject FullscreenButtonObj;     
+    public GameObject ExitFullscreenButtonObj; 
+    public Slider musicSlider;
+    public TMP_Dropdown resolutionDropdown;
+    public TMP_Dropdown qualityDropdown; // Referinta pentru Dropdown-ul de calitate
+
+    [Header("Audio")]
     public AudioMixer Volume;
+    private const string MIXER_PARAM = "MasterVolume";
+    private const string SAVE_KEY_VOL = "MusicVolume";
+    private const string SAVE_KEY_QUAL = "QualityLevel";
+
+    Resolution[] resolutions;
+
+    public AudioMixer audioMixer;
+    [System.Serializable] // Asta face ca lista sa apara in Inspector!
+    public class RezolutiePersonalizata
+    {
+        public string numeAfisat; 
+        public int width;         
+        public int height;       
+    }
+
+    public List<RezolutiePersonalizata> listaRezolutii;
+    void Start()
+    {
+
+        InitResolutions();
+        // Incarcam volumul salvat. 
+        float savedVolume = PlayerPrefs.GetFloat(SAVE_KEY_VOL, 1f);
+        // Actualizam pozitia slider-ului
+        musicSlider.value = savedVolume;
+        // Aplicam volumul salvat in AudioMixer
+        SetMusicVolume(savedVolume);
+    }
+
+    public void SetMusicVolume(float volume)
+    {
+        float volumeInDecibels = (volume > 0.0001f) ? Mathf.Log10(volume) * 20 : -80f;
+        // Setam volumul in Mixer
+        audioMixer.SetFloat(MIXER_PARAM, volumeInDecibels);
+        // Salvam volumul in PlayerPrefs
+        PlayerPrefs.SetFloat(SAVE_KEY_VOL, volume);
+        PlayerPrefs.Save();
+    }
+
+    void InitResolutions()
+    {
+        resolutionDropdown.ClearOptions();
+
+        List<string> options = new List<string>();
+        int currentResolutionIndex = 0;
+
+        // Trecem prin lista si vedem daca rezolutia curenta se potriveste cu una din lista
+        for (int i = 0; i < listaRezolutii.Count; i++)
+        {
+            options.Add(listaRezolutii[i].numeAfisat);
+            if (listaRezolutii[i].width == Screen.width &&
+                listaRezolutii[i].height == Screen.height)
+            {
+                currentResolutionIndex = i;
+            }
+        }
+
+        resolutionDropdown.AddOptions(options);
+        resolutionDropdown.value = currentResolutionIndex;
+        resolutionDropdown.RefreshShownValue();
+    }
 
     public void StartGame()
     {
         SceneManager.LoadScene("testscene");
+    }
+
+    public void SetResolution(int resolutionIndex)
+    {
+        // Luam rezolutia din lista
+        RezolutiePersonalizata rezolutieAleasa = listaRezolutii[resolutionIndex];
+
+        Screen.SetResolution(rezolutieAleasa.width, rezolutieAleasa.height, Screen.fullScreen);
+    }
+
+    public void SetFullscreen(bool isFullscreen)
+    {
+        Screen.fullScreen = isFullscreen;
+        UpdateFullscreenButtons(isFullscreen);
+    }
+    private void UpdateFullscreenButtons(bool isFullscreen)
+    {
+        if (FullscreenButtonObj != null && ExitFullscreenButtonObj != null)
+        {
+            FullscreenButtonObj.SetActive(!isFullscreen);
+            ExitFullscreenButtonObj.SetActive(isFullscreen);
+        }
     }
 
     public void ExitGame()
@@ -18,35 +111,6 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Jocul a fost inchis");
     }
 
-    public void OpenSettings()
-    {
-        // activeaza SettingsPanel care e ascuns initial in editor
-        SettingsPanel.SetActive(true);
-    }
-    public void SetMusicVolume(float volume)
-    {
-        // valoarea Slider-ului trebuie convertita logaritmic
-        Volume.SetFloat("MasterVolume", Mathf.Log10(volume) * 20);
-    }
-
-    public void SetFullscreen(bool isFullscreen)
-    {
-        Screen.fullScreen = isFullscreen;
-        if (isFullscreen)
-        {
-            Fullscreen.SetActive(false);
-            ExitFullscreen.SetActive(true);
-        }
-        else
-        {
-            Fullscreen.SetActive(true);
-            ExitFullscreen.SetActive(false);
-        }
-    }
-
-    public void CloseSettings()
-    {
-        // dezactiveaza SettingsPanel
-        SettingsPanel.SetActive(false);
-    }
+    public void OpenSettings() { SettingsPanel.SetActive(true); }
+    public void CloseSettings() { SettingsPanel.SetActive(false); }
 }
