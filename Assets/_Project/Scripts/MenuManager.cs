@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.SceneManagement;
+using UnityEngine.Audio; // pentru gestionarea sunetului
+using UnityEngine.SceneManagement;// pentru schimbatul scenelor
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
@@ -8,23 +8,18 @@ using System.Collections.Generic;
 public class MenuManager : MonoBehaviour
 {
     [Header("Referinte UI")]
-    public GameObject SettingsPanel;
-    public GameObject FullscreenButtonObj;     
-    public GameObject ExitFullscreenButtonObj; 
+    public GameObject SettingsPanel,Fullscreen,ExitFullscreen;
     public Slider musicSlider;
     public TMP_Dropdown resolutionDropdown;
-    public TMP_Dropdown qualityDropdown; // Referinta pentru Dropdown-ul de calitate
 
     [Header("Audio")]
     public AudioMixer Volume;
     private const string MIXER_PARAM = "MasterVolume";
     private const string SAVE_KEY_VOL = "MusicVolume";
-    private const string SAVE_KEY_QUAL = "QualityLevel";
 
     Resolution[] resolutions;
 
-    public AudioMixer audioMixer;
-    [System.Serializable] // Asta face ca lista sa apara in Inspector!
+    [System.Serializable] // Asta face ca lista sa apara in Inspector
     public class RezolutiePersonalizata
     {
         public string numeAfisat; 
@@ -47,9 +42,10 @@ public class MenuManager : MonoBehaviour
 
     public void SetMusicVolume(float volume)
     {
+        // valoarea Slider-ului trebuie convertita logaritmic
         float volumeInDecibels = (volume > 0.0001f) ? Mathf.Log10(volume) * 20 : -80f;
         // Setam volumul in Mixer
-        audioMixer.SetFloat(MIXER_PARAM, volumeInDecibels);
+        Volume.SetFloat(MIXER_PARAM, volumeInDecibels);
         // Salvam volumul in PlayerPrefs
         PlayerPrefs.SetFloat(SAVE_KEY_VOL, volume);
         PlayerPrefs.Save();
@@ -98,10 +94,10 @@ public class MenuManager : MonoBehaviour
     }
     private void UpdateFullscreenButtons(bool isFullscreen)
     {
-        if (FullscreenButtonObj != null && ExitFullscreenButtonObj != null)
+        if (Fullscreen != null && ExitFullscreen != null)
         {
-            FullscreenButtonObj.SetActive(!isFullscreen);
-            ExitFullscreenButtonObj.SetActive(isFullscreen);
+            Fullscreen.SetActive(!isFullscreen);
+            ExitFullscreen.SetActive(isFullscreen);
         }
     }
 
@@ -110,7 +106,8 @@ public class MenuManager : MonoBehaviour
         Application.Quit();
         Debug.Log("Jocul a fost inchis");
     }
-
+    // activeaza SettingsPanel care e ascuns initial in editor
     public void OpenSettings() { SettingsPanel.SetActive(true); }
+    // dezactiveaza SettingsPanel
     public void CloseSettings() { SettingsPanel.SetActive(false); }
 }
