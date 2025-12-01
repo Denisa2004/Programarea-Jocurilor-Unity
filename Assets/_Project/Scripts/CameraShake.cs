@@ -7,8 +7,8 @@ public class CameraShake : MonoBehaviour
     private Vector3 originalPosition;
     private float shakeDuration = 0f;
 
-    [SerializeField] private float shakeAmount = 2.4f;   // Intensity of the shake
-    [SerializeField] private float shakeTime = 1.4f;     // Duration of the shake
+    [SerializeField] private float shakeAmount = 0.6f;   // Intensity of the shake
+    [SerializeField] private float shakeTime = 0.4f;     // Duration of the shake
 
     private void Awake()
     {
@@ -35,5 +35,6 @@ public class CameraShake : MonoBehaviour
     public void Shake()
     {
         shakeDuration = shakeTime; // Start shake with fixed duration
+        
     }
 }
