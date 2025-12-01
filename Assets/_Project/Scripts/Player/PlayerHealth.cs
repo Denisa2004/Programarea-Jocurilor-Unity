@@ -86,7 +86,7 @@ public class PlayerHealth : MonoBehaviour
         {
             position = rb != null ? rb.position : transform.position,
             rotation = rb != null ? rb.rotation : transform.rotation,
-            velocity = rb != null ? rb.velocity : Vector3.zero,
+            velocity = rb != null ? rb.linearVelocity : Vector3.zero,
             time = Time.time
         };
         lastSafeState = init;
@@ -118,7 +118,7 @@ public class PlayerHealth : MonoBehaviour
         {
             position = rb != null ? rb.position : transform.position,
             rotation = rb != null ? rb.rotation : transform.rotation,
-            velocity = rb != null ? rb.velocity : Vector3.zero,
+            velocity = rb != null ? rb.linearVelocity : Vector3.zero,
             time = Time.time
         };
 
@@ -126,7 +126,7 @@ public class PlayerHealth : MonoBehaviour
 
         // Update lastSafeState heuristics:
         // Consider the sample 'safe' if it is above the fall threshold and not rapidly falling
-        bool notRapidlyFalling = rb == null || rb.velocity.y > -5f;
+        bool notRapidlyFalling = rb == null || rb.linearVelocity.y > -5f;
         if (s.position.y > fallYThreshold + 1f && notRapidlyFalling)
         {
             lastSafeState = s;
@@ -288,7 +288,7 @@ public class PlayerHealth : MonoBehaviour
         {
             rb.position = s.position;
             rb.rotation = s.rotation;
-            rb.velocity = s.velocity;
+            rb.linearVelocity = s.velocity;
             rb.angularVelocity = Vector3.zero;
         }
         else
@@ -315,7 +315,7 @@ public class PlayerHealth : MonoBehaviour
         {
             position = rb != null ? rb.position : transform.position,
             rotation = rb != null ? rb.rotation : transform.rotation,
-            velocity = rb != null ? rb.velocity : Vector3.zero,
+            velocity = rb != null ? rb.linearVelocity : Vector3.zero,
             time = Time.time
         };
         history.Add(init);
