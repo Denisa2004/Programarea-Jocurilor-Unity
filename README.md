@@ -22,11 +22,6 @@ Deschideți scena principală (de exemplu, "Main Menu").
 
 Apăsați butonul "Play" (iconița ▶) a editorului pentru a rula jocul.
 
-
-**Notă importantă pentru Review (Stadiu Sprint 1):**
-
-Componentele dezvoltate în acest sprint nu sunt încă integrate într-o singură scenă funcțională. Echipa a lucrat pe branch-uri Git separate, iar integrarea completă (jucător + obstacole + generare procedurală) este planificată pentru un sprint viitor, odată ce vom adăuga generarea procedurală a nivelului.
-
 ---
 
 
@@ -34,19 +29,13 @@ Componentele dezvoltate în acest sprint nu sunt încă integrate într-o singur
 
 Acest repository conține proiectul Unity pentru jocul nostru de tip "lane runner".
 
-La stadiul actual (finalul Sprintului 1), proiectul include:
+La stadiul actual, proiectul include:
 
-Structura inițială de foldere (Scene, Scripturi etc).
+Structura de foldere (Scene, Scripturi etc).
 
 Configurarea de bază a proiectului și a fișierelor .gitignore.
 
-O scenă de test ("MainMenu") cu elementele placeholder inițiale.
-
----
-
-## Rapoarte Sprint
-
-Toate rapoartele de sprint se găsesc în folderul "Sprints" din acest repository.
+Folderul cu rapoartele de sprint
 
 ---
 
