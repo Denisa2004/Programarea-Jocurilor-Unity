@@ -27,7 +27,21 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
         isGameOver = true;
 
-        Time.timeScale = 0f; // oprire joc
+        // Save collected coins into total coins
+        if (CoinManager.Instance != null)
+        {
+            CoinManager.Instance.SaveRunCoinsToTotal();
+        }
+
+        // Stop scoring and save high score
+        ScoreManager scoreMgr = FindObjectOfType<ScoreManager>();
+        if (scoreMgr != null)
+        {
+            scoreMgr.StopScoringAndSave();
+        }
+
+        // Pause the game and show the Game Over UI
+        Time.timeScale = 0f;
 
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
@@ -43,6 +57,6 @@ public class GameManager : MonoBehaviour
     public void GoToMainMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu"); // numele exact al scenei de meniu
+        SceneManager.LoadScene("MainMenu");
     }
 }
