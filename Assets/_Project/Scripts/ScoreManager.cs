@@ -3,32 +3,55 @@ using TMPro;
 
 public class ScoreManager : MonoBehaviour
 {
+    [Header("UI")]
     public TextMeshProUGUI scoreText;
 
+    [Header("Scoring")]
     public float pointsPerSecond = 5f;
+    public bool isScoring = true;
+
+    [Header("Difficulty / Speed")]
+    public MovementScript playerMovement;  
+    public int pointsStep = 50;            
+    public float speedIncrease = 0.75f;   
+    public float maxForwardSpeed = 20f;  
 
     private float currentScore = 0f;
     private int highScore = 0;
-
-    public bool isScoring = true;
+    private int nextThreshold;
 
     private const string HIGH_SCORE_KEY = "HighScore";
 
-    void Start()
+    private void Start()
     {
         // Load saved high score
         highScore = PlayerPrefs.GetInt(HIGH_SCORE_KEY, 0);
 
+        nextThreshold = pointsStep;
+
+        if (playerMovement != null && playerMovement.GetForwardSpeed() <= 0f)
+        {
+            playerMovement.SetForwardSpeed(2f);
+        }
+
         UpdateUI();
     }
 
-    void Update()
+    private void Update()
     {
-        if (isScoring)
+        if (!isScoring)
+            return;
+
+        currentScore += pointsPerSecond * Time.deltaTime;
+
+        int displayScore = (int)currentScore;
+        while (displayScore >= nextThreshold)
         {
-            currentScore += pointsPerSecond * Time.deltaTime;
-            UpdateUI();
+            IncreasePlayerSpeed();
+            nextThreshold += pointsStep;
         }
+
+        UpdateUI();
     }
 
     public void StopScoringAndSave()
@@ -37,7 +60,6 @@ public class ScoreManager : MonoBehaviour
 
         int finalScore = (int)currentScore;
 
-        // Update high score if needed
         if (finalScore > highScore)
         {
             highScore = finalScore;
@@ -48,13 +70,25 @@ public class ScoreManager : MonoBehaviour
         UpdateUI();
     }
 
+    private void IncreasePlayerSpeed()
+    {
+        if (playerMovement == null)
+            return;
+
+        float currentForward = playerMovement.GetForwardSpeed();
+        float newForward = Mathf.Min(currentForward + speedIncrease, maxForwardSpeed);
+        playerMovement.SetForwardSpeed(newForward);
+
+        Debug.Log($"[ScoreManager] Speed increased: at score {(int)currentScore}");
+    }
+
     private void UpdateUI()
     {
-        if (scoreText != null)
-        {
-            scoreText.text =
-                "Score: " + (int)currentScore +
-                "\nHigh Score: " + highScore;
-        }
+        if (scoreText == null)
+            return;
+
+        scoreText.text =
+            "Score: " + (int)currentScore +
+            "\nHigh Score: " + highScore;
     }
 }
