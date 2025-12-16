@@ -14,7 +14,6 @@ public class PlayerController : MonoBehaviour
     public float thrustForce = 25f;
     public float maxFlightTime = 2f;    // Maximum seconds of thrust (was maxFuel)
     public float maxJumpHeight = 1.2f;   // Maximum height above ground when jump started
-    public float thrustForce = 25f;
     public float maxFuel = 1f;
     private float currentFuel;
     private float jumpStartY;           // Y position when jump started
@@ -30,7 +29,6 @@ public class PlayerController : MonoBehaviour
 
     private bool isJumpHeld = false; // stocheaza daca tinem apasat pe w
     private float speedMultiplier = 1f;
-    private bool isJumpHeld = false;
     private bool isRotating = false;
 
     void Start()
@@ -60,7 +58,6 @@ public class PlayerController : MonoBehaviour
     {
         ReadInput();
 
-        //  Citim si stocam starea butonului de saritura
         //  Citim si stocam starea butonului de saritura 
         isJumpHeld = moveRead.y > 0.5f;
 
@@ -139,6 +136,11 @@ public class PlayerController : MonoBehaviour
         // Returneaza 'true' daca raza loveste un collider in interiorul razei 'raycastDistance'.
         // '~LayerMask.GetMask("Player")' se asigura ca Raycast-ul ignora propriul Layer al jucatorului.
         return Physics.Raycast(transform.position, Vector3.down, raycastDistance, ~LayerMask.GetMask("Player"));
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        speedMultiplier = multiplier;
     }
 
     IEnumerator RotatePlayer(float angle)
