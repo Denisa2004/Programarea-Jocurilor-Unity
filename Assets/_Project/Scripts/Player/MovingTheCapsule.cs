@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public GameObject playerCamera;
 
     private bool isJumpHeld = false; // stocheaza daca tinem apasat pe w
+    private float speedMultiplier = 1f;
 
 
     void Start()
@@ -81,9 +82,9 @@ public class PlayerController : MonoBehaviour
         float currentSpeedZ = Vector3.Dot(currentVelocity, transform.forward);
 
         // Daca viteza curenta inainte este mai mica decat viteza maxima dorita se aplica accelerarea pentru atunci cand incepe jocul si player ul sta pe loc
-        if (currentSpeedZ < forwardSpeed)
+        if (currentSpeedZ < forwardSpeed * speedMultiplier)
         {
-            rb.AddForce(transform.forward * forwardAcceleration, ForceMode.Acceleration);
+            rb.AddForce(transform.forward * forwardAcceleration * speedMultiplier, ForceMode.Acceleration);
         }
 
         // pentru miscarea laterala 
@@ -112,6 +113,11 @@ public class PlayerController : MonoBehaviour
         // Returneaza 'true' daca raza loveste un collider in interiorul razei 'raycastDistance'.
         // '~LayerMask.GetMask("Player")' se asigura ca Raycast-ul ignora propriul Layer al jucatorului.
         return Physics.Raycast(transform.position, Vector3.down, raycastDistance, ~LayerMask.GetMask("Player"));
+    }
+
+    public void SetSpeedMultiplier(float multiplier)
+    {
+        speedMultiplier = multiplier;
     }
 }
 

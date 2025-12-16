@@ -26,6 +26,9 @@ public class PlayerHealth : MonoBehaviour
     public bool disableMovementOnHit = true;
     public MonoBehaviour movementComponent;
 
+    [Header("Audio")]
+    public AudioClip damageSound;
+
     public event Action<float> OnHealthChanged;
 
     private Rigidbody rb;
@@ -41,6 +44,7 @@ public class PlayerHealth : MonoBehaviour
     private readonly List<State> history = new List<State>();
     private float recordTimer = 0f;
     private bool isInvulnerable = false;
+    private bool isPowerUpInvulnerable = false;
     private bool isRestoring = false;
 
     // The most recent 'safe' recorded state (used as a fallback if rewind samples are invalid)
@@ -156,7 +160,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (fraction <= 0f) return;
         if (health <= 0f) return;
-        if (isInvulnerable) return;
+        if (isInvulnerable || isPowerUpInvulnerable) return;
 
         // Apply health change
         health = Mathf.Clamp01(health - fraction);
@@ -165,6 +169,12 @@ public class PlayerHealth : MonoBehaviour
 
         // Camera feedback
         if (CameraShake.Instance != null) CameraShake.Instance.Shake();
+
+        // Audio feedback
+        if (damageSound != null)
+        {
+            AudioSource.PlayClipAtPoint(damageSound, transform.position);
+        }
 
         // Rewind player a few seconds back
         RestoreToSecondsAgo(rewindSeconds);
@@ -453,5 +463,10 @@ public class PlayerHealth : MonoBehaviour
         hasLastSafeState = true;
     }
 
-    public bool IsInvulnerable() => isInvulnerable;
+    public bool IsInvulnerable() => isInvulnerable || isPowerUpInvulnerable;
+
+    public void SetInvulnerable(bool state)
+    {
+        isPowerUpInvulnerable = state;
+    }
 }
