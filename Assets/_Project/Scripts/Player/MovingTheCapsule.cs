@@ -10,9 +10,12 @@ public class PlayerController : MonoBehaviour
     public float raycastDistance = 1.1f;
 
     [Header("Jetpack Settings")]
-    public float thrustForce = 25f;     
-    public float maxFuel = 1f;          
+    public float thrustForce = 25f;
+    public float maxFlightTime = 2f;    // Maximum seconds of thrust (was maxFuel)
+    public float maxJumpHeight = 1.2f;   // Maximum height above ground when jump started
     private float currentFuel;
+    private float jumpStartY;           // Y position when jump started
+    private bool isJumping = false;     // Track if we're in a jump
 
     private InputAction moveAction;
     private Vector2 moveRead;
@@ -27,20 +30,28 @@ public class PlayerController : MonoBehaviour
         moveAction = InputSystem.actions.FindAction("Move");
         // Obtine componenta Rigidbody de pe acelasi GameObject si o stocheaza in rb
         rb = GetComponent<Rigidbody>();
-        currentFuel = maxFuel; // initializez combustibilul la maxim la start
+        currentFuel = maxFlightTime; // initializez combustibilul la maxim la start
     }
 
     void Update()
     {
         ReadInput();
 
-        //  Citim si stocam starea butonului de saritura 
+        //  Citim si stocam starea butonului de saritura
         isJumpHeld = moveRead.y > 0.5f;
+
+        // Track when jump starts
+        if (isJumpHeld && !isJumping && IsGrounded())
+        {
+            isJumping = true;
+            jumpStartY = transform.position.y;
+        }
 
         // Reincarcam combustibilul daca suntem pe pamant si nu apasam W
         if (IsGrounded() && !isJumpHeld)
         {
-            currentFuel = maxFuel;
+            currentFuel = maxFlightTime;
+            isJumping = false;
         }
 
         // Seteaza pozitia camerei relativ la jucator
@@ -49,8 +60,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Daca tinem W apasat si mai avem combustibil
-        if (isJumpHeld && currentFuel > 0f)
+        // Check if we can thrust: holding jump, have fuel, and below max height
+        float currentHeight = transform.position.y - jumpStartY;
+        bool belowMaxHeight = currentHeight < maxJumpHeight;
+        bool hasFuel = currentFuel > 0f;
+
+        if (isJumpHeld && hasFuel && belowMaxHeight)
         {
             // Aplicam o forta continua in sus
             // Folosim ForceMode.Acceleration ca sa ignore masa
