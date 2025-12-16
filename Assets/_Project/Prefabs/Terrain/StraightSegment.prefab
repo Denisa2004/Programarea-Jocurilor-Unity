@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8830132882779651859}
   - component: {fileID: 876545212896030034}
+  - component: {fileID: 1234567890123456789}
   m_Layer: 0
   m_Name: NewSectionTrigger
   m_TagString: Trigger
@@ -53,6 +54,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 20, y: 10, z: 0.1}
   m_Center: {x: 0, y: -0.011715174, z: -0.20486748}
+--- !u!114 &1234567890123456789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 569088240472586186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747656864aaa1224a84bc80b0bdfbe96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4428372402412055243
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,6 +259,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5227667852190548399}
+  - component: {fileID: 9876543210987654321}
+  - component: {fileID: 1122334455667788990}
   m_Layer: 0
   m_Name: StraightSegment
   m_TagString: Untagged
@@ -272,3 +287,34 @@ Transform:
   - {fileID: 8830132882779651859}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9876543210987654321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601484506300110138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fea1197e0fe109489680d7391e5bee9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  segmentType: 0
+--- !u!114 &1122334455667788990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601484506300110138}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a3655bbfa9ec7345a6eab001cb50401, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minGenerations: 3
+  maxGenerations: 0
+  straightSegmentPrefab: {fileID: 0}
+  turnLeftSegmentPrefab: {fileID: 0}
+  turnRightSegmentPrefab: {fileID: 0}
+  turnProbability: 0.3
