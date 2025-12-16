@@ -11,7 +11,11 @@ public class CoinManager : MonoBehaviour
     public int CurrentRunCoins { get; private set; }
 
     // total coins saved between sessions
+
+
     public int TotalCoins { get; private set; }
+    
+    private int coinMultiplier = 1;
 
     private const string TOTAL_COINS_KEY = "TotalCoins";
 
@@ -38,8 +42,13 @@ public class CoinManager : MonoBehaviour
     // called when picking up a coin
     public void AddCoins(int amount)
     {
-        CurrentRunCoins += amount;
+        CurrentRunCoins += amount * coinMultiplier;
         UpdateUI();
+    }
+
+    public void SetMultiplier(int multiplier)
+    {
+        coinMultiplier = multiplier;
     }
 
     // called when the run ends (GameOver)
