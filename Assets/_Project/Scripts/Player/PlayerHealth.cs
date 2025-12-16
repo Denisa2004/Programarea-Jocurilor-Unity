@@ -26,6 +26,9 @@ public class PlayerHealth : MonoBehaviour
     public bool disableMovementOnHit = true;
     public MonoBehaviour movementComponent;
 
+    [Header("Audio")]
+    public AudioClip damageSound;
+
     public event Action<float> OnHealthChanged;
 
     private Rigidbody rb;
@@ -165,6 +168,12 @@ public class PlayerHealth : MonoBehaviour
 
         // Camera feedback
         if (CameraShake.Instance != null) CameraShake.Instance.Shake();
+
+        // Audio feedback
+        if (damageSound != null)
+        {
+            AudioSource.PlayClipAtPoint(damageSound, transform.position);
+        }
 
         // Rewind player a few seconds back
         RestoreToSecondsAgo(rewindSeconds);
