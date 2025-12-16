@@ -12,8 +12,13 @@ public class PlayerController : MonoBehaviour
 
     [Header("Jetpack Settings")]
     public float thrustForce = 25f;
+    public float maxFlightTime = 2f;    // Maximum seconds of thrust (was maxFuel)
+    public float maxJumpHeight = 1.2f;   // Maximum height above ground when jump started
+    public float thrustForce = 25f;
     public float maxFuel = 1f;
     private float currentFuel;
+    private float jumpStartY;           // Y position when jump started
+    private bool isJumping = false;     // Track if we're in a jump
 
     private InputAction moveAction;
     private InputAction rotateLeftAction;
@@ -23,6 +28,8 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     public GameObject playerCamera;
 
+    private bool isJumpHeld = false; // stocheaza daca tinem apasat pe w
+    private float speedMultiplier = 1f;
     private bool isJumpHeld = false;
     private bool isRotating = false;
 
@@ -35,6 +42,7 @@ public class PlayerController : MonoBehaviour
 
         // Obtine componenta Rigidbody de pe acelasi GameObject si o stocheaza in rb
         rb = GetComponent<Rigidbody>();
+        currentFuel = maxFlightTime; // initializez combustibilul la maxim la start
         currentFuel = maxFuel;
 
         // Leg rotirile la evenimente
@@ -51,11 +59,24 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         ReadInput();
+
+        //  Citim si stocam starea butonului de saritura
         //  Citim si stocam starea butonului de saritura 
         isJumpHeld = moveRead.y > 0.5f;
 
+        // Track when jump starts
+        if (isJumpHeld && !isJumping && IsGrounded())
+        {
+            isJumping = true;
+            jumpStartY = transform.position.y;
+        }
+
         // Reincarcam combustibilul daca suntem pe pamant si nu apasam W
         if (IsGrounded() && !isJumpHeld)
+        {
+            currentFuel = maxFlightTime;
+            isJumping = false;
+        }
             currentFuel = maxFuel;
 
         // Seteaza pozitia camerei relativ la jucator
@@ -65,8 +86,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Daca tinem W apasat si mai avem combustibil
-        if (isJumpHeld && currentFuel > 0f)
+        // Check if we can thrust: holding jump, have fuel, and below max height
+        float currentHeight = transform.position.y - jumpStartY;
+        bool belowMaxHeight = currentHeight < maxJumpHeight;
+        bool hasFuel = currentFuel > 0f;
+
+        if (isJumpHeld && hasFuel && belowMaxHeight)
         {
             // Aplicam o forta continua in sus
             // Folosim ForceMode.Acceleration ca sa ignore masa
@@ -82,9 +107,9 @@ public class PlayerController : MonoBehaviour
         float currentSpeedZ = Vector3.Dot(currentVelocity, transform.forward);
 
         // Daca viteza curenta inainte este mai mica decat viteza maxima dorita se aplica accelerarea pentru atunci cand incepe jocul si player ul sta pe loc
-        if (currentSpeedZ < forwardSpeed)
+        if (currentSpeedZ < forwardSpeed * speedMultiplier)
         {
-            rb.AddForce(transform.forward * forwardAcceleration, ForceMode.Acceleration);
+            rb.AddForce(transform.forward * forwardAcceleration * speedMultiplier, ForceMode.Acceleration);
         }
 
         // pentru miscarea laterala 
