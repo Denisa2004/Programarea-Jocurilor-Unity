@@ -29,9 +29,10 @@ public class CoinManager : MonoBehaviour
         }
 
         Instance = this;
+        DontDestroyOnLoad(gameObject); //to exist in other scenes too
 
-        // 1) Load total coins saved from previous sessions
-        TotalCoins = PlayerPrefs.GetInt(TOTAL_COINS_KEY, 0);
+       // 1) Load total coins saved from previous sessions
+       TotalCoins = PlayerPrefs.GetInt(TOTAL_COINS_KEY, 0);
 
         // 2) Start new run from 0
         CurrentRunCoins = 0;
@@ -56,17 +57,32 @@ public class CoinManager : MonoBehaviour
     {
         // Add this run's coins to total saved coins
         TotalCoins += CurrentRunCoins;
-
-        // Save permanently
-        PlayerPrefs.SetInt(TOTAL_COINS_KEY, TotalCoins);
-        PlayerPrefs.Save();
-
         // Reset run coins for next run
         CurrentRunCoins = 0;
 
         UpdateUI();
     }
+    public bool SpendCoins(int amount)
+    {
+        if (TotalCoins < amount)
+        {
+            return false;
+        }
 
+        TotalCoins -= amount;
+        SaveTotalCoins();
+        UpdateUI(); 
+
+        return true;
+    }
+
+   private void SaveTotalCoins()
+    {
+        // Save permanently
+        PlayerPrefs.SetInt(TOTAL_COINS_KEY, TotalCoins);
+        PlayerPrefs.Save();
+
+    }
     private void UpdateUI()
     {
         if (coinsText != null)
