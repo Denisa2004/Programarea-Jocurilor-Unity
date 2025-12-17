@@ -40,6 +40,11 @@ public class PlayerController : MonoBehaviour
 
         // Obtine componenta Rigidbody de pe acelasi GameObject si o stocheaza in rb
         rb = GetComponent<Rigidbody>();
+
+        // Freeze rotation on X and Z to prevent tumbling from obstacle collisions
+        // MoveRotation() still works for intentional Y-axis rotation
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
         currentFuel = maxFlightTime; // initializez combustibilul la maxim la start
         currentFuel = maxFuel;
 
