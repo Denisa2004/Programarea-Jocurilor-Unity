@@ -19,6 +19,9 @@ public class MenuManager : MonoBehaviour
 
     [Header("Shop")]
     public GameObject ShopPanel;
+    [Header("Control Panel")]
+    public GameObject controlPanel;
+    
 
     Resolution[] resolutions;
 
@@ -126,5 +129,14 @@ public class MenuManager : MonoBehaviour
         if (ShopPanel != null) ShopPanel.SetActive(false);
     }
 
+    public void ShowControlPanel()
+    {
+        controlPanel.SetActive(true);
+    }
+
+    public void HideControlPanel()
+    {
+        controlPanel.SetActive(false);
+    }
 
 }
