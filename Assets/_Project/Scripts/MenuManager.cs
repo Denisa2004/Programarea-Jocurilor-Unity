@@ -17,6 +17,12 @@ public class MenuManager : MonoBehaviour
     private const string MIXER_PARAM = "MasterVolume";
     private const string SAVE_KEY_VOL = "MusicVolume";
 
+    [Header("Shop")]
+    public GameObject ShopPanel;
+    [Header("Control Panel")]
+    public GameObject controlPanel;
+    
+
     Resolution[] resolutions;
 
     [System.Serializable] // Asta face ca lista sa apara in Inspector
@@ -110,4 +116,27 @@ public class MenuManager : MonoBehaviour
     public void OpenSettings() { SettingsPanel.SetActive(true); }
     // dezactiveaza SettingsPanel
     public void CloseSettings() { SettingsPanel.SetActive(false); }
+
+    //activates shopPanel which is hidden initially in the editor
+    public void OpenShop()
+    {
+        if (ShopPanel != null) ShopPanel.SetActive(true);
+    }
+
+    //deactivates shopPanel
+    public void CloseShop()
+    {
+        if (ShopPanel != null) ShopPanel.SetActive(false);
+    }
+
+    public void ShowControlPanel()
+    {
+        controlPanel.SetActive(true);
+    }
+
+    public void HideControlPanel()
+    {
+        controlPanel.SetActive(false);
+    }
+
 }

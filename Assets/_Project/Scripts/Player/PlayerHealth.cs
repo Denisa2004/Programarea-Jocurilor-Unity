@@ -26,6 +26,9 @@ public class PlayerHealth : MonoBehaviour
     public bool disableMovementOnHit = true;
     public MonoBehaviour movementComponent;
 
+    [Header("Audio")]
+    public AudioClip damageSound;
+
     public event Action<float> OnHealthChanged;
 
     private Rigidbody rb;
@@ -41,6 +44,7 @@ public class PlayerHealth : MonoBehaviour
     private readonly List<State> history = new List<State>();
     private float recordTimer = 0f;
     private bool isInvulnerable = false;
+    private bool isPowerUpInvulnerable = false;
     private bool isRestoring = false;
 
     // The most recent 'safe' recorded state (used as a fallback if rewind samples are invalid)
@@ -156,7 +160,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (fraction <= 0f) return;
         if (health <= 0f) return;
-        if (isInvulnerable) return;
+        if (isInvulnerable || isPowerUpInvulnerable) return;
 
         // Apply health change
         health = Mathf.Clamp01(health - fraction);
@@ -165,6 +169,12 @@ public class PlayerHealth : MonoBehaviour
 
         // Camera feedback
         if (CameraShake.Instance != null) CameraShake.Instance.Shake();
+
+        // Audio feedback
+        if (damageSound != null)
+        {
+            AudioSource.PlayClipAtPoint(damageSound, transform.position);
+        }
 
         // Rewind player a few seconds back
         RestoreToSecondsAgo(rewindSeconds);
@@ -203,8 +213,49 @@ public class PlayerHealth : MonoBehaviour
     {
         isRestoring = true;
 
-        // Prevent immediate re-triggers
-        RestoreToSecondsAgo(rewindSeconds);
+        // Apply damage for falling (same as hitting an obstacle)
+        health = Mathf.Clamp01(health - damagePerHit);
+        OnHealthChanged?.Invoke(health);
+        if (healthSlider != null) healthSlider.value = health;
+
+        // Check if this fall was lethal
+        bool lethal = health <= 0f;
+
+        // Camera feedback
+        if (CameraShake.Instance != null) CameraShake.Instance.Shake();
+
+        // Store original kinematic state
+        bool wasKinematic = rb != null && rb.isKinematic;
+
+        // Find the best restore position BEFORE changing physics state
+        Vector3 restorePos;
+        Quaternion restoreRot;
+        FindBestRestoreState(out restorePos, out restoreRot);
+
+        // Ensure restore position is valid - if not, force it above threshold
+        if (restorePos.y < fallYThreshold)
+        {
+            restorePos.y = fallYThreshold + 2f;
+            Debug.LogWarning($"PlayerHealth: No valid restore position found, forcing Y to {restorePos.y}");
+        }
+
+        // Apply the restore using transform (more reliable than rb.position when kinematic)
+        if (rb != null)
+        {
+            rb.isKinematic = true;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        transform.position = restorePos;
+        transform.rotation = restoreRot;
+
+        // Sync rigidbody position
+        if (rb != null)
+        {
+            rb.position = restorePos;
+            rb.rotation = restoreRot;
+        }
 
         // Apply short invulnerability and optionally disable movement
         isInvulnerable = true;
@@ -218,10 +269,82 @@ public class PlayerHealth : MonoBehaviour
             yield return null;
         }
 
-        if (disableMovementOnHit && movementComponent != null)
-            movementComponent.enabled = true;
-        isInvulnerable = false;
+        // Restore physics state
+        if (rb != null && !wasKinematic)
+        {
+            rb.isKinematic = false;
+            rb.linearVelocity = Vector3.zero;
+        }
+
+        // Update lastSafeState to current position after successful restore
+        Vector3 currentPos = rb != null ? rb.position : transform.position;
+        if (currentPos.y >= fallYThreshold)
+        {
+            lastSafeState = new State
+            {
+                position = currentPos,
+                rotation = rb != null ? rb.rotation : transform.rotation,
+                velocity = Vector3.zero,
+                time = Time.time
+            };
+            hasLastSafeState = true;
+
+            // Clear old history to prevent restoring to pre-fall states
+            history.Clear();
+            history.Add(lastSafeState);
+        }
+
+        if (lethal)
+        {
+            // Player died from fall
+            GameManager.Instance?.GameOver();
+        }
+        else
+        {
+            if (disableMovementOnHit && movementComponent != null)
+                movementComponent.enabled = true;
+            isInvulnerable = false;
+        }
         isRestoring = false;
+    }
+
+    private void FindBestRestoreState(out Vector3 position, out Quaternion rotation)
+    {
+        // First try: find a valid state from history (2 seconds ago)
+        float targetTime = Time.time - rewindSeconds;
+
+        for (int i = history.Count - 1; i >= 0; i--)
+        {
+            if (history[i].time <= targetTime && history[i].position.y >= fallYThreshold)
+            {
+                position = history[i].position;
+                rotation = history[i].rotation;
+                return;
+            }
+        }
+
+        // Second try: find ANY valid state from history
+        for (int i = history.Count - 1; i >= 0; i--)
+        {
+            if (history[i].position.y >= fallYThreshold)
+            {
+                position = history[i].position;
+                rotation = history[i].rotation;
+                return;
+            }
+        }
+
+        // Third try: use lastSafeState if valid
+        if (hasLastSafeState && lastSafeState.position.y >= fallYThreshold)
+        {
+            position = lastSafeState.position;
+            rotation = lastSafeState.rotation;
+            return;
+        }
+
+        // Last resort: use current position (will be corrected by caller)
+        position = rb != null ? rb.position : transform.position;
+        rotation = rb != null ? rb.rotation : transform.rotation;
     }
 
     /// Restores the player's transform to the recorded state from secondsAgo
@@ -272,29 +395,46 @@ public class PlayerHealth : MonoBehaviour
     // If the computed state appears to be below the fall threshold or otherwise unsafe, fall back to lastSafeState
     private void ApplySafeOrFallback(State s)
     {
-        if (s.position.y < fallYThreshold && hasLastSafeState)
-        {
-            ApplyState(lastSafeState);
-        }
-        else
+        // If computed state is valid, use it
+        if (s.position.y >= fallYThreshold)
         {
             ApplyState(s);
+            return;
         }
+
+        // Try lastSafeState if valid
+        if (hasLastSafeState && lastSafeState.position.y >= fallYThreshold)
+        {
+            State safeStateWithZeroVelocity = lastSafeState;
+            safeStateWithZeroVelocity.velocity = Vector3.zero;
+            ApplyState(safeStateWithZeroVelocity);
+            return;
+        }
+
+        // Last resort: use computed state but force Y above threshold
+        Debug.LogWarning("PlayerHealth: No safe state available, forcing position above threshold.");
+        State forced = s;
+        forced.position.y = fallYThreshold + 2f;
+        forced.velocity = Vector3.zero;
+        ApplyState(forced);
     }
 
     private void ApplyState(State s)
     {
+        // Always set transform position first (more reliable)
+        transform.position = s.position;
+        transform.rotation = s.rotation;
+
+        // Then sync rigidbody if available
         if (rb != null)
         {
             rb.position = s.position;
             rb.rotation = s.rotation;
-            rb.linearVelocity = s.velocity;
-            rb.angularVelocity = Vector3.zero;
-        }
-        else
-        {
-            transform.position = s.position;
-            transform.rotation = s.rotation;
+            if (!rb.isKinematic)
+            {
+                rb.linearVelocity = s.velocity;
+                rb.angularVelocity = Vector3.zero;
+            }
         }
     }
 
@@ -323,5 +463,10 @@ public class PlayerHealth : MonoBehaviour
         hasLastSafeState = true;
     }
 
-    public bool IsInvulnerable() => isInvulnerable;
+    public bool IsInvulnerable() => isInvulnerable || isPowerUpInvulnerable;
+
+    public void SetInvulnerable(bool state)
+    {
+        isPowerUpInvulnerable = state;
+    }
 }
