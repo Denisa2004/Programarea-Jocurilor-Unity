@@ -4,21 +4,22 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
-    //variabile pentru viteza si forta
+    [Header("Setari Miscare")]
     public float sideSpeed = 10f;
     public float forwardSpeed = 10f;
     public float forwardAcceleration = 10f;
     public float raycastDistance = 1.1f;
 
-    [Header("Jetpack Settings")]
+    [Header("Setari Jetpack")]
     public float thrustForce = 25f;
-    public float maxFlightTime = 2f;    // Maximum seconds of thrust (was maxFuel)
-    public float maxJumpHeight = 1.2f;   // Maximum height above ground when jump started
-    public float maxFuel = 1f;
-    private float currentFuel;
-    private float jumpStartY;           // Y position when jump started
-    private bool isJumping = false;     // Track if we're in a jump
+    public float maxFlightTime = 2f;    // Timpul maxim de zbor
+    public float maxJumpHeight = 1.2f;   // Inaltimea maxima fata de punctul de decolare
+    public float maxFuel = 1f;           // Capacitate rezervor
+    private float currentFuel;           // Combustibil actual
+    private float jumpStartY;            // Pozitia Y de unde a inceput saritura
+    private bool isJumping = false;      // Verifica daca suntem in aer
 
+    // Referinte catre noul Input System
     private InputAction moveAction;
     private InputAction rotateLeftAction;
     private InputAction rotateRightAction;
@@ -27,158 +28,152 @@ public class PlayerController : MonoBehaviour
     private Rigidbody rb;
     public GameObject playerCamera;
 
-    private bool isJumpHeld = false; // stocheaza daca tinem apasat pe w
-    private float speedMultiplier = 1f;
-    private bool isRotating = false;
+    private bool isJumpHeld = false;     // Daca tasta de saritura (W/Space) este apasata
+    private float speedMultiplier = 1f;  // Multiplicator pentru viteza (ex: power-ups)
+    private bool isRotating = false;     // Previne suprapunerea rotatiilor
 
-    void Start()
+    void Awake()
     {
-        // Input System actions
+        // Initializam referintele catre actiunile de input din sistem
         moveAction = InputSystem.actions.FindAction("Move");
         rotateLeftAction = InputSystem.actions.FindAction("RotateLeft");
         rotateRightAction = InputSystem.actions.FindAction("RotateRight");
 
-        // Obtine componenta Rigidbody de pe acelasi GameObject si o stocheaza in rb
         rb = GetComponent<Rigidbody>();
+    }
 
-        // Freeze rotation on X and Z to prevent tumbling from obstacle collisions
-        // MoveRotation() still works for intentional Y-axis rotation
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+    // Metoda apelata cand obiectul este activat (prevenim MissingReferenceException)
+    private void OnEnable()
+    {
+        if (rotateLeftAction != null) rotateLeftAction.performed += OnRotateLeft;
+        if (rotateRightAction != null) rotateRightAction.performed += OnRotateRight;
+    }
 
-        currentFuel = maxFlightTime; // initializez combustibilul la maxim la start
-        currentFuel = maxFuel;
+    // Metoda apelata cand obiectul este distrus sau dezactivat (curatam legaturile)
+    private void OnDisable()
+    {
+        if (rotateLeftAction != null) rotateLeftAction.performed -= OnRotateLeft;
+        if (rotateRightAction != null) rotateRightAction.performed -= OnRotateRight;
+    }
 
-        // Leg rotirile la evenimente
-        rotateLeftAction.performed += ctx => TryRotate(-90f);
-        rotateRightAction.performed += ctx => TryRotate(+90f);
+    // Functii de legatura pentru evenimentele de input
+    private void OnRotateLeft(InputAction.CallbackContext ctx) => TryRotate(-90f);
+    private void OnRotateRight(InputAction.CallbackContext ctx) => TryRotate(90f);
+
+    void Start()
+    {
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
+        currentFuel = maxFlightTime;
     }
 
     void TryRotate(float angle)
     {
-        if (!isRotating)
+        // Pornim corutina de rotire doar daca nu ne rotim deja si obiectul exista
+        if (this != null && !isRotating && gameObject.activeInHierarchy)
+        {
             StartCoroutine(RotatePlayer(angle));
+        }
     }
 
     void Update()
     {
         ReadInput();
 
-        //  Citim si stocam starea butonului de saritura 
+        // Verificam daca tasta de "Inainte/Sari" este apasata (axa Y a stick-ului/WASD)
         isJumpHeld = moveRead.y > 0.5f;
 
-        // Track when jump starts
+        // Inregistram inaltimea de start cand incepem sa zburam de pe sol
         if (isJumpHeld && !isJumping && IsGrounded())
         {
             isJumping = true;
             jumpStartY = transform.position.y;
         }
 
-        // Reincarcam combustibilul daca suntem pe pamant si nu apasam W
+        // Reincarcam combustibilul cand atingem solul si nu mai incercam sa sarim
         if (IsGrounded() && !isJumpHeld)
         {
             currentFuel = maxFlightTime;
             isJumping = false;
         }
-            currentFuel = maxFuel;
 
-        // Seteaza pozitia camerei relativ la jucator
-        playerCamera.transform.position =
-            new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z - 5f);
+        // Actualizam pozitia camerei sa urmareasca jucatorul (offset fix)
+        if (playerCamera != null)
+        {
+            playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y + 3f, transform.position.z - 5f);
+        }
     }
 
     private void FixedUpdate()
     {
-        // Check if we can thrust: holding jump, have fuel, and below max height
-        float currentHeight = transform.position.y - jumpStartY;
-        bool belowMaxHeight = currentHeight < maxJumpHeight;
+        // Logica Jetpack: daca apasam butonul, avem combustibil si suntem sub inaltimea maxima
+        float currentHeightRelative = transform.position.y - jumpStartY;
+        bool belowMaxHeight = currentHeightRelative < maxJumpHeight;
         bool hasFuel = currentFuel > 0f;
 
         if (isJumpHeld && hasFuel && belowMaxHeight)
         {
-            // Aplicam o forta continua in sus
-            // Folosim ForceMode.Acceleration ca sa ignore masa
+            // Aplicam forta in sus ignorand masa (Acceleration)
             rb.AddForce(Vector3.up * thrustForce, ForceMode.Acceleration);
-
-            // Consumam combustibil
-            currentFuel -= Time.fixedDeltaTime; // Scadem timpul cat a fost apasat
+            // Consumam combustibil in functie de timpul scurs
+            currentFuel -= Time.fixedDeltaTime;
         }
 
-        // obtinem vectorul vitezei curente a Rigidbody-ului
+        // Gestionarea vitezei de inaintare (Forward)
         Vector3 currentVelocity = rb.linearVelocity;
-        // Calculeaza viteza jucatorului in directia sa inainte
-        float currentSpeedZ = Vector3.Dot(currentVelocity, transform.forward);
+        float currentSpeedForward = Vector3.Dot(currentVelocity, transform.forward);
 
-        // Daca viteza curenta inainte este mai mica decat viteza maxima dorita se aplica accelerarea pentru atunci cand incepe jocul si player ul sta pe loc
-        if (currentSpeedZ < forwardSpeed * speedMultiplier)
+        if (currentSpeedForward < forwardSpeed * speedMultiplier)
         {
             rb.AddForce(transform.forward * forwardAcceleration * speedMultiplier, ForceMode.Acceleration);
         }
 
-        // pentru miscarea laterala 
+        // Gestionarea miscarii laterale (Left/Right)
         Vector3 lateralForce = transform.right * moveRead.x * sideSpeed;
         rb.AddForce(lateralForce, ForceMode.Force);
     }
 
-
     private void ReadInput()
     {
-        // se verifica daca exista un input
+        // Citim valorile din noul Input System
         if (moveAction != null)
-        {
-            // Citeste input ul (X pentru A/D, Y pentru W/S) si il stocheaza in moveRead
             moveRead = moveAction.ReadValue<Vector2>();
-        }
-        else
-        {
-            moveRead = Vector2.zero;
-        }
     }
-
 
     private bool IsGrounded()
     {
-        // Trage un Raycast in jos de la pozitia jucatorului.
-        // Returneaza 'true' daca raza loveste un collider in interiorul razei 'raycastDistance'.
-        // '~LayerMask.GetMask("Player")' se asigura ca Raycast-ul ignora propriul Layer al jucatorului.
+        // Tragem o raza invizibila in jos pentru a vedea daca suntem pe sol
+        // Ignoram layer-ul Player pentru a nu ne detecta pe noi insine
         return Physics.Raycast(transform.position, Vector3.down, raycastDistance, ~LayerMask.GetMask("Player"));
     }
 
-    public void SetSpeedMultiplier(float multiplier)
-    {
-        speedMultiplier = multiplier;
-    }
+    public void SetSpeedMultiplier(float multiplier) => speedMultiplier = multiplier;
 
+    // Corutina pentru rotire lina la 90 de grade
     IEnumerator RotatePlayer(float angle)
     {
-        // Creez o noua rotatie (Quaternion) prin adaugarea sau scaderea a 90 de grade pe planul orizontal (axa Y)
-        Quaternion turnRotation = Quaternion.Euler(0f, angle, 0f);
+        isRotating = true;
 
-        // Iau rotatia curenta a Rigidbody-ului
         Quaternion currentRotation = rb.rotation;
-
-        // Inmultesc rotatia curenta cu noua rotatie de intoarcere(in cazul quaternion-ilor asta inseamna adunarea rotatiilor).
-        Quaternion finalRotation = currentRotation * turnRotation;
+        Quaternion finalRotation = currentRotation * Quaternion.Euler(0f, angle, 0f);
 
         float timeElapsed = 0f;
+        float duration = 0.1f; // Durata rotatiei in secunde
 
-        // ca sa nu se faca rotatia instant, folosim un coroutine pentru a face rotatia treptat in timp
-        while (timeElapsed < 0.1f)
+        while (timeElapsed < duration)
         {
-            // Calculeaza progresul de timp
-            float t = timeElapsed / 0.1f;
-
-            // Mathf.SmoothStep returneaza o valoare intre 0 si 1 care este atenuata la capete (ajuta la a avea o rotatie mai lina)
+            float t = timeElapsed / duration;
+            // SmoothStep face rotitia sa inceapa lina si sa se termine lina
             float t_eased = Mathf.SmoothStep(0f, 1f, t);
 
-            // Mutam rotatia de la start la end pe baza progresului atenuat (t_eased)
-            Quaternion nextRotation = Quaternion.Slerp(currentRotation, finalRotation, t_eased);
-
-
-            rb.MoveRotation(nextRotation);
+            // Folosim Slerp pentru interpolare intre rotatii
+            rb.MoveRotation(Quaternion.Slerp(currentRotation, finalRotation, t_eased));
 
             timeElapsed += Time.fixedDeltaTime;
-
             yield return new WaitForFixedUpdate();
         }
+
+        // Ne asiguram ca rotitia este exacta la final
+        rb.MoveRotation(finalRotation);
+        isRotating = false;
     }
 }
