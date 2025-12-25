@@ -22,6 +22,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        // Shortcut pentru Restart Rapid - tasta R
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RestartLevel();
+        }
+    }
+
     public void GameOver()
     {
         if (isGameOver) return;

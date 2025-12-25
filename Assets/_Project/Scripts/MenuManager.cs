@@ -34,8 +34,21 @@ public class MenuManager : MonoBehaviour
     }
 
     public List<RezolutiePersonalizata> listaRezolutii;
+    
     void Start()
     {
+        // Creeaza sau gaseste AudioManager si seteaza AudioMixer-ul
+        if (AudioManager.Instance == null)
+        {
+            GameObject audioMgrObj = new GameObject("AudioManager");
+            audioMgrObj.AddComponent<AudioManager>();
+        }
+        
+        // Seteaza AudioMixer-ul pentru AudioManager
+        if (AudioManager.Instance != null && Volume != null)
+        {
+            AudioManager.Instance.SetAudioMixer(Volume);
+        }
 
         InitResolutions();
         // Incarcam volumul salvat. 
@@ -48,13 +61,19 @@ public class MenuManager : MonoBehaviour
 
     public void SetMusicVolume(float volume)
     {
-        // valoarea Slider-ului trebuie convertita logaritmic
-        float volumeInDecibels = (volume > 0.0001f) ? Mathf.Log10(volume) * 20 : -80f;
-        // Setam volumul in Mixer
-        Volume.SetFloat(MIXER_PARAM, volumeInDecibels);
-        // Salvam volumul in PlayerPrefs
-        PlayerPrefs.SetFloat(SAVE_KEY_VOL, volume);
-        PlayerPrefs.Save();
+        // Foloseste AudioManager daca exista
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetVolume(volume);
+        }
+        else
+        {
+            // Fallback la controlul direct al mixer-ului
+            float volumeInDecibels = (volume > 0.0001f) ? Mathf.Log10(volume) * 20 : -80f;
+            Volume.SetFloat(MIXER_PARAM, volumeInDecibels);
+            PlayerPrefs.SetFloat(SAVE_KEY_VOL, volume);
+            PlayerPrefs.Save();
+        }
     }
 
     void InitResolutions()

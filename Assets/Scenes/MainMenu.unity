@@ -847,6 +847,7 @@ GameObject:
   - component: {fileID: 139506351}
   - component: {fileID: 139506353}
   - component: {fileID: 139506352}
+  - component: {fileID: 139506354}
   m_Layer: 5
   m_Name: ControlPanel
   m_TagString: Untagged
@@ -912,6 +913,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 139506350}
   m_CullTransparentMesh: 1
+--- !u!114 &139506354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 139506350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 132a4fd09331a2645be25f8baaf83067, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  additionalShortcuts: 'M - Mute/Unmute
+
+    R - Restart
+
+    Tab - Game Stats'
+  textPosition: {x: 0, y: -520}
+  fontSize: 36
+  textColor: {r: 0, g: 0, b: 0, a: 1}
+  fontStyle: 0
+  customFont: {fileID: 11400000, guid: 8a89fa14b10d46a99122fd4f73fca9a2, type: 2}
 --- !u!1 &169351510
 GameObject:
   m_ObjectHideFlags: 0
