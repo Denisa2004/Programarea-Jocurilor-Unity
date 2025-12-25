@@ -66,6 +66,21 @@ public class CoinManager : MonoBehaviour
 
         UpdateUI();
     }
+    public bool SpendCoins(int amount)
+    {
+        if (TotalCoins < amount)
+        {
+            return false;
+        }
+
+        TotalCoins -= amount;
+        // Save permanently
+        PlayerPrefs.SetInt(TOTAL_COINS_KEY, TotalCoins);
+        PlayerPrefs.Save();
+        UpdateUI();
+
+        return true;
+    }
 
     private void UpdateUI()
     {

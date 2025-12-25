@@ -17,6 +17,12 @@ public class MenuManager : MonoBehaviour
     private const string MIXER_PARAM = "MasterVolume";
     private const string SAVE_KEY_VOL = "MusicVolume";
 
+    [Header("Shop")]
+    public GameObject ShopPanel;
+    [Header("Control Panel")]
+    public GameObject controlPanel;
+    
+
     Resolution[] resolutions;
 
     [System.Serializable] // Asta face ca lista sa apara in Inspector
@@ -28,8 +34,21 @@ public class MenuManager : MonoBehaviour
     }
 
     public List<RezolutiePersonalizata> listaRezolutii;
+    
     void Start()
     {
+        // Creeaza sau gaseste AudioManager si seteaza AudioMixer-ul
+        if (AudioManager.Instance == null)
+        {
+            GameObject audioMgrObj = new GameObject("AudioManager");
+            audioMgrObj.AddComponent<AudioManager>();
+        }
+        
+        // Seteaza AudioMixer-ul pentru AudioManager
+        if (AudioManager.Instance != null && Volume != null)
+        {
+            AudioManager.Instance.SetAudioMixer(Volume);
+        }
 
         InitResolutions();
         // Incarcam volumul salvat. 
@@ -42,13 +61,19 @@ public class MenuManager : MonoBehaviour
 
     public void SetMusicVolume(float volume)
     {
-        // valoarea Slider-ului trebuie convertita logaritmic
-        float volumeInDecibels = (volume > 0.0001f) ? Mathf.Log10(volume) * 20 : -80f;
-        // Setam volumul in Mixer
-        Volume.SetFloat(MIXER_PARAM, volumeInDecibels);
-        // Salvam volumul in PlayerPrefs
-        PlayerPrefs.SetFloat(SAVE_KEY_VOL, volume);
-        PlayerPrefs.Save();
+        // Foloseste AudioManager daca exista
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SetVolume(volume);
+        }
+        else
+        {
+            // Fallback la controlul direct al mixer-ului
+            float volumeInDecibels = (volume > 0.0001f) ? Mathf.Log10(volume) * 20 : -80f;
+            Volume.SetFloat(MIXER_PARAM, volumeInDecibels);
+            PlayerPrefs.SetFloat(SAVE_KEY_VOL, volume);
+            PlayerPrefs.Save();
+        }
     }
 
     void InitResolutions()
@@ -110,4 +135,27 @@ public class MenuManager : MonoBehaviour
     public void OpenSettings() { SettingsPanel.SetActive(true); }
     // dezactiveaza SettingsPanel
     public void CloseSettings() { SettingsPanel.SetActive(false); }
+
+    //activates shopPanel which is hidden initially in the editor
+    public void OpenShop()
+    {
+        if (ShopPanel != null) ShopPanel.SetActive(true);
+    }
+
+    //deactivates shopPanel
+    public void CloseShop()
+    {
+        if (ShopPanel != null) ShopPanel.SetActive(false);
+    }
+
+    public void ShowControlPanel()
+    {
+        controlPanel.SetActive(true);
+    }
+
+    public void HideControlPanel()
+    {
+        controlPanel.SetActive(false);
+    }
+
 }
