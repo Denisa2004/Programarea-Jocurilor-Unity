@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 2bdeac0299afda645a673b4ecfb81729
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 227480
+  packageName: EnemyCow
+  packageVersion: 1.0
+  assetPath: Assets/omiStudio/Enemy Cow/Art/Animations/Cow/Cow1/Run.anim
+  uploadId: 518482

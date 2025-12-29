@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 7cd76c7f592486c488aeeb01a3ca6782
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 227480
+  packageName: EnemyCow
+  packageVersion: 1.0
+  assetPath: Assets/omiStudio/Enemy Cow/Scripts/SetStateAnimation.cs
+  uploadId: 518482
