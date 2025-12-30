@@ -12,8 +12,8 @@ public class ShadowEnemy : MonoBehaviour
     public Transform cameraTransform;
 
     // Distance settings
-    public float maxDistance = 5f;
-    public float minDistance = 1f;
+    public float maxDistance = 15f;
+    public float minDistance = 2f;
 
     // Transparency settings
     public float maxAlpha = 1f;
@@ -24,7 +24,7 @@ public class ShadowEnemy : MonoBehaviour
     public float takeoverDuration = 1f;
 
     // Position offset
-    public Vector3 offsetFromPlayer = new Vector3(0f, 1.5f, 0f);
+    public Vector3 offsetFromPlayer = new Vector3(0f, 0f, 0f);
 
     private float currentHealth = 1f;
 
@@ -98,6 +98,7 @@ public class ShadowEnemy : MonoBehaviour
     {
         currentHealth = newHealth;
         UpdateEnemyAppearance();
+        UpdateEnemyPosition();
     }
 
     private void UpdateEnemyAppearance()
@@ -126,7 +127,9 @@ public class ShadowEnemy : MonoBehaviour
         Vector3 enemyPosition = playerTransform.position - directionToPlayer * distance + offsetFromPlayer;
         enemySprite.transform.position = enemyPosition;
 
-        enemySprite.transform.LookAt(playerTransform.position + offsetFromPlayer);
+        // Billboard: make sprite face the camera
+        enemySprite.transform.LookAt(cameraTransform);
+        enemySprite.transform.Rotate(0, 180, 0);
     }
 
     public void TriggerScreenTakeover(System.Action onComplete)
@@ -141,6 +144,10 @@ public class ShadowEnemy : MonoBehaviour
             onComplete?.Invoke();
             yield break;
         }
+
+        // Hide the world sprite
+        if (enemySprite != null)
+            enemySprite.gameObject.SetActive(false);
 
         screenTakeoverImage.gameObject.SetActive(true);
 
