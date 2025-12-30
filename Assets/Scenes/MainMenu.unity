@@ -2317,6 +2317,21 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: 0bd2ee4293bb6934f93f75052784b75c, type: 3}
     playerSprite: {fileID: 21300000, guid: 0bd2ee4293bb6934f93f75052784b75c, type: 3}
     price: 25
+  - id: penguin
+    displayName: Penguin
+    icon: {fileID: 21300000, guid: d794da955cc5c0b4a91f450cc0b6aa66, type: 3}
+    playerSprite: {fileID: 21300000, guid: d794da955cc5c0b4a91f450cc0b6aa66, type: 3}
+    price: 50
+  - id: duck
+    displayName: Duck
+    icon: {fileID: 21300000, guid: a44d7e6618020b2489a1a56ccae28478, type: 3}
+    playerSprite: {fileID: 21300000, guid: a44d7e6618020b2489a1a56ccae28478, type: 3}
+    price: 100
+  - id: avatar5
+    displayName: avatar5
+    icon: {fileID: 21300000, guid: d2bec2b24e515724f84ff157eca844ea, type: 3}
+    playerSprite: {fileID: 21300000, guid: d2bec2b24e515724f84ff157eca844ea, type: 3}
+    price: 100
 --- !u!1 &593238223
 GameObject:
   m_ObjectHideFlags: 0
@@ -3843,7 +3858,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -5.000061, y: -87.34595}
+  m_AnchoredPosition: {x: -5, y: -87.34595}
   m_SizeDelta: {x: 0, y: 955.1809}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1228611250
@@ -4332,10 +4347,10 @@ RectTransform:
   - {fileID: 1788727764}
   - {fileID: 2104486986}
   - {fileID: 2103893093}
+  - {fileID: 1797207779}
   - {fileID: 1887191999}
   - {fileID: 1228611249}
   - {fileID: 570913021}
-  - {fileID: 1797207779}
   - {fileID: 139506351}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
