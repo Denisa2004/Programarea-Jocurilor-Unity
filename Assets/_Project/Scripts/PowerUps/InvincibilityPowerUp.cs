@@ -11,32 +11,42 @@ public class InvincibilityPowerUp : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            StartCoroutine(ActivatePowerUp(other));
+            // Run coroutine on player object
+            MonoBehaviour playerMono = other.GetComponent<MonoBehaviour>();
+            if (playerMono != null)
+            {
+                playerMono.StartCoroutine(ActivatePowerUp(other));
+            }
+            
+            // Hide and destroy powerup
+            Collider col = GetComponent<Collider>();
+            if (col != null) col.enabled = false;
+            
+            Renderer rend = GetComponent<Renderer>();
+            if (rend != null) rend.enabled = false;
+            
+            Destroy(gameObject, 0.1f);
         }
     }
 
     private IEnumerator ActivatePowerUp(Collider player)
     {
-        // Disable collider to prevent multiple triggers
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = false;
-
-        // Disable renderer to hide the object (make it look collected)
-        Renderer rend = GetComponent<Renderer>();
-        if (rend != null) rend.enabled = false;
-
+        Debug.Log("InvincibilityPowerUp: Activating effects");
+        
         // Apply effects
         PlayerHealth health = player.GetComponent<PlayerHealth>();
         PlayerController controller = player.GetComponent<PlayerController>();
+        
+        // Save original speed
+        float originalSpeedMultiplier = 1f;
+        if (controller != null)
+        {
+            originalSpeedMultiplier = controller.GetSpeedMultiplier();
+        }
 
         if (health != null)
         {
             health.SetInvulnerable(true);
-        }
-
-        if (controller != null)
-        {
-            controller.SetSpeedMultiplier(speedMultiplier);
         }
 
         if (controller != null)
@@ -68,7 +78,8 @@ public class InvincibilityPowerUp : MonoBehaviour
 
         if (controller != null)
         {
-            controller.SetSpeedMultiplier(1f);
+            // Restore original speed
+            controller.SetSpeedMultiplier(originalSpeedMultiplier);
         }
 
         // Restore collisions
@@ -85,7 +96,6 @@ public class InvincibilityPowerUp : MonoBehaviour
             }
         }
 
-        // Destroy the power-up object
-        Destroy(gameObject);
+        Debug.Log("InvincibilityPowerUp: Effects expired, restored to normal");
     }
 }
