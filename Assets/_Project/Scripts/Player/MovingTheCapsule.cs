@@ -147,6 +147,7 @@ public class PlayerController : MonoBehaviour
     }
 
     public void SetSpeedMultiplier(float multiplier) => speedMultiplier = multiplier;
+    public float GetSpeedMultiplier() => speedMultiplier;
 
     // Corutina pentru rotire lina la 90 de grade
     IEnumerator RotatePlayer(float angle)
