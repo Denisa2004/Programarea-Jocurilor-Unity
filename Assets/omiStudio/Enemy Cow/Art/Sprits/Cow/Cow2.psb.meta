@@ -13307,6 +13307,28 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: -618, y: -371}
     spritePosition: {x: 1462, y: 820}
+  - name: Cow2_0
+    originalName: 
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 123
+      y: 0
+      width: 1449
+      height: 4076
+    spriteID: 05737ab5ff23d2143bc26f9a8ffee43a
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 123, y: 0}
+    spritePosition: {x: 0, y: 0}
   spriteImportData:
   - name: 
     originalName: 

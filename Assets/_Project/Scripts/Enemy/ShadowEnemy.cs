@@ -6,8 +6,9 @@ public class ShadowEnemy : MonoBehaviour
 {
     public static ShadowEnemy Instance { get; private set; }
 
-    // Enemy sprite in world space
-    public SpriteRenderer enemySprite;
+    // Enemy object in world space (can have multiple SpriteRenderers)
+    public Transform enemyTransform;
+    private SpriteRenderer[] enemySprites;
     public Transform playerTransform;
     public Transform cameraTransform;
 
@@ -65,6 +66,17 @@ public class ShadowEnemy : MonoBehaviour
         if (cameraTransform == null)
             cameraTransform = Camera.main?.transform;
 
+        // Get all SpriteRenderers from the enemy transform
+        if (enemyTransform != null)
+        {
+            enemySprites = enemyTransform.GetComponentsInChildren<SpriteRenderer>();
+            Debug.Log($"ShadowEnemy: Found {enemySprites.Length} sprite renderers in {enemyTransform.name}");
+        }
+        else
+        {
+            Debug.LogWarning("ShadowEnemy: enemyTransform is not assigned!");
+        }
+
         if (screenTakeoverImage != null)
             screenTakeoverImage.gameObject.SetActive(false);
 
@@ -97,39 +109,49 @@ public class ShadowEnemy : MonoBehaviour
     private void OnHealthChanged(float newHealth)
     {
         currentHealth = newHealth;
+        float alpha = Mathf.Lerp(maxAlpha, minAlpha, Mathf.Clamp01(currentHealth));
+        Debug.Log($"ShadowEnemy: Health changed to {newHealth}, setting alpha to {alpha}");
         UpdateEnemyAppearance();
         UpdateEnemyPosition();
     }
 
     private void UpdateEnemyAppearance()
     {
-        if (enemySprite == null) return;
+        if (enemySprites == null || enemySprites.Length == 0) return;
 
         // Alpha: 0 at full health, maxAlpha at zero health
         float healthPercent = Mathf.Clamp01(currentHealth);
         float alpha = Mathf.Lerp(maxAlpha, minAlpha, healthPercent);
 
-        Color color = enemySprite.color;
-        color.a = alpha;
-        enemySprite.color = color;
+        foreach (SpriteRenderer sprite in enemySprites)
+        {
+            if (sprite == null) continue;
+            Color color = sprite.color;
+            color.a = alpha;
+            sprite.color = color;
+        }
     }
 
     private void UpdateEnemyPosition()
     {
-        if (enemySprite == null || playerTransform == null || cameraTransform == null) return;
+        if (enemyTransform == null || playerTransform == null || cameraTransform == null) return;
 
         // Distance: far at full health, close at zero health
         float healthPercent = Mathf.Clamp01(currentHealth);
         float distance = Mathf.Lerp(minDistance, maxDistance, healthPercent);
 
-        // Place enemy between camera and player (chasing from behind)
-        Vector3 directionToPlayer = (playerTransform.position - cameraTransform.position).normalized;
-        Vector3 enemyPosition = playerTransform.position - directionToPlayer * distance + offsetFromPlayer;
-        enemySprite.transform.position = enemyPosition;
+        // Place enemy in front of player (between player and camera)
+        Vector3 directionToCamera = (cameraTransform.position - playerTransform.position).normalized;
+        Vector3 enemyPosition = playerTransform.position + directionToCamera * distance + offsetFromPlayer;
+        enemyTransform.position = enemyPosition;
 
-        // Billboard: make sprite face the camera
-        enemySprite.transform.LookAt(cameraTransform);
-        enemySprite.transform.Rotate(0, 180, 0);
+        // Make 2D sprite face camera (rotate only around Y axis)
+        Vector3 lookDir = cameraTransform.position - enemyTransform.position;
+        lookDir.y = 0;
+        if (lookDir != Vector3.zero)
+        {
+            enemyTransform.rotation = Quaternion.LookRotation(lookDir);
+        }
     }
 
     public void TriggerScreenTakeover(System.Action onComplete)
@@ -146,8 +168,8 @@ public class ShadowEnemy : MonoBehaviour
         }
 
         // Hide the world sprite
-        if (enemySprite != null)
-            enemySprite.gameObject.SetActive(false);
+        if (enemyTransform != null)
+            enemyTransform.gameObject.SetActive(false);
 
         screenTakeoverImage.gameObject.SetActive(true);
 
