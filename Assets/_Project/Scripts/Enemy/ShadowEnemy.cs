@@ -86,8 +86,6 @@ public class ShadowEnemy : MonoBehaviour
 
         // Start hidden
         HideEnemy();
-
-        Debug.Log($"ShadowEnemy Start: enemyTransform={(enemyTransform != null ? enemyTransform.name : "NULL")}, sprites found={(enemySprites != null ? enemySprites.Length : 0)}");
     }
 
     private IEnumerator SubscribeToHealthDelayed()
@@ -113,7 +111,6 @@ public class ShadowEnemy : MonoBehaviour
             UpdateEnemyPosition();
         }
     }
-
     private void OnHealthChanged(float newHealth)
     {
         float previousHealth = currentHealth;
@@ -121,12 +118,9 @@ public class ShadowEnemy : MonoBehaviour
 
         // Only show enemy if player took damage (health decreased)
         if (newHealth < previousHealth)
-        {
             ShowEnemy();
-        }
 
         float alpha = Mathf.Lerp(maxAlpha, minAlpha, Mathf.Clamp01(currentHealth));
-        Debug.Log($"ShadowEnemy: Health changed to {newHealth}, setting alpha to {alpha}");
 
         if (isVisible)
         {
@@ -137,7 +131,8 @@ public class ShadowEnemy : MonoBehaviour
 
     private void UpdateEnemyAppearance()
     {
-        if (enemySprites == null || enemySprites.Length == 0) return;
+        if (enemySprites == null || enemySprites.Length == 0) 
+            return;
 
         // Alpha: 0 at full health, maxAlpha at zero health
         float healthPercent = Mathf.Clamp01(currentHealth);
@@ -168,8 +163,6 @@ public class ShadowEnemy : MonoBehaviour
 
         Vector3 enemyPosition = playerTransform.position + directionToCamera * distance + offsetFromPlayer;
         enemyTransform.position = enemyPosition;
-
-        Debug.Log($"Enemy pos: {enemyPosition}, Player pos: {playerTransform.position}, Distance: {distance}");
 
         // Make 2D sprite face away from camera (show back to player)
         Vector3 lookDir = cameraTransform.position - enemyTransform.position;

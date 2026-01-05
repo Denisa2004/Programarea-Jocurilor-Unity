@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: e78893ea69894f4409b3b8e331bed288
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 296969
+  packageName: '2D Monster - Cute & Chibi: Free Pack (Unique Skill Animated Prefab
+    with SFX)'
+  packageVersion: 1.0
+  assetPath: Assets/Chibi Monster Free (Unique Skill Animated Prefab with SFX)/Demo/Script/PrefabSpawner.cs
+  uploadId: 695267
