@@ -77,6 +77,8 @@ public class ShadowEnemy : MonoBehaviour
 
         StartCoroutine(SubscribeToHealthDelayed());
         UpdateEnemyAppearance();
+
+        Debug.Log($"ShadowEnemy Start: enemyTransform={(enemyTransform != null ? enemyTransform.name : "NULL")}, sprites found={(enemySprites != null ? enemySprites.Length : 0)}");
     }
 
     private IEnumerator SubscribeToHealthDelayed()
@@ -143,6 +145,8 @@ public class ShadowEnemy : MonoBehaviour
 
         Vector3 enemyPosition = playerTransform.position + directionToCamera * distance + offsetFromPlayer;
         enemyTransform.position = enemyPosition;
+
+        Debug.Log($"Enemy pos: {enemyPosition}, Player pos: {playerTransform.position}, Distance: {distance}");
 
         // Make 2D sprite face away from camera (show back to player)
         Vector3 lookDir = cameraTransform.position - enemyTransform.position;
