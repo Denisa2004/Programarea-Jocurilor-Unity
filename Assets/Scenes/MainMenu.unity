@@ -6565,6 +6565,7 @@ MonoBehaviour:
   Volume: {fileID: 24100000, guid: 39fb85ea4c611bd4fa619d62e2974111, type: 2}
   ShopPanel: {fileID: 570913020}
   controlPanel: {fileID: 139506350}
+  controlPanelButton: {fileID: 1797207778}
   listaRezolutii:
   - numeAfisat: Low(540p)
     width: 960

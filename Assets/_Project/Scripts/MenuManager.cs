@@ -21,6 +21,7 @@ public class MenuManager : MonoBehaviour
     public GameObject ShopPanel;
     [Header("Control Panel")]
     public GameObject controlPanel;
+    public GameObject controlPanelButton;
     
 
     Resolution[] resolutions;
@@ -132,7 +133,11 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Jocul a fost inchis");
     }
     // activeaza SettingsPanel care e ascuns initial in editor
-    public void OpenSettings() { SettingsPanel.SetActive(true); }
+    public void OpenSettings()
+    {
+        SettingsPanel.SetActive(true);
+        SettingsPanel.transform.SetAsLastSibling(); // ensures settings panel renders above other UI elements
+    }
     // dezactiveaza SettingsPanel
     public void CloseSettings() { SettingsPanel.SetActive(false); }
 
@@ -140,12 +145,14 @@ public class MenuManager : MonoBehaviour
     public void OpenShop()
     {
         if (ShopPanel != null) ShopPanel.SetActive(true);
+        if (controlPanelButton != null) controlPanelButton.SetActive(false);
     }
 
     //deactivates shopPanel
     public void CloseShop()
     {
         if (ShopPanel != null) ShopPanel.SetActive(false);
+        if (controlPanelButton != null) controlPanelButton.SetActive(true);
     }
 
     public void ShowControlPanel()
