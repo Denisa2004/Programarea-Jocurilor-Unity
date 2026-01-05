@@ -27,7 +27,14 @@ public class ShadowEnemy : MonoBehaviour
     // Position offset
     public Vector3 offsetFromPlayer = new Vector3(0f, -1f, -1f);
 
+    // Visibility duration settings
+    public float maxVisibleDuration = 5f;
+
     private float currentHealth = 1f;
+
+    // Visibility state
+    private bool isVisible = false;
+    private Coroutine hideCoroutine;
 
     private void Awake()
     {
@@ -76,7 +83,9 @@ public class ShadowEnemy : MonoBehaviour
             screenTakeoverImage.gameObject.SetActive(false);
 
         StartCoroutine(SubscribeToHealthDelayed());
-        UpdateEnemyAppearance();
+
+        // Start hidden
+        HideEnemy();
 
         Debug.Log($"ShadowEnemy Start: enemyTransform={(enemyTransform != null ? enemyTransform.name : "NULL")}, sprites found={(enemySprites != null ? enemySprites.Length : 0)}");
     }
@@ -88,7 +97,6 @@ public class ShadowEnemy : MonoBehaviour
         {
             PlayerHealth.Instance.OnHealthChanged += OnHealthChanged;
             currentHealth = PlayerHealth.Instance.health;
-            UpdateEnemyAppearance();
         }
     }
 
@@ -100,16 +108,31 @@ public class ShadowEnemy : MonoBehaviour
 
     private void LateUpdate()
     {
-        UpdateEnemyPosition();
+        if (isVisible)
+        {
+            UpdateEnemyPosition();
+        }
     }
 
     private void OnHealthChanged(float newHealth)
     {
+        float previousHealth = currentHealth;
         currentHealth = newHealth;
+
+        // Only show enemy if player took damage (health decreased)
+        if (newHealth < previousHealth)
+        {
+            ShowEnemy();
+        }
+
         float alpha = Mathf.Lerp(maxAlpha, minAlpha, Mathf.Clamp01(currentHealth));
         Debug.Log($"ShadowEnemy: Health changed to {newHealth}, setting alpha to {alpha}");
-        UpdateEnemyAppearance();
-        UpdateEnemyPosition();
+
+        if (isVisible)
+        {
+            UpdateEnemyAppearance();
+            UpdateEnemyPosition();
+        }
     }
 
     private void UpdateEnemyAppearance()
@@ -157,6 +180,48 @@ public class ShadowEnemy : MonoBehaviour
         }
     }
 
+    private void ShowEnemy()
+    {
+        // Cancel any pending hide
+        if (hideCoroutine != null)
+        {
+            StopCoroutine(hideCoroutine);
+            hideCoroutine = null;
+        }
+
+        isVisible = true;
+
+        if (enemyTransform != null)
+            enemyTransform.gameObject.SetActive(true);
+
+        UpdateEnemyAppearance();
+        UpdateEnemyPosition();
+
+        // Start timer to hide after maxVisibleDuration
+        hideCoroutine = StartCoroutine(HideAfterDelay());
+    }
+
+    private void HideEnemy()
+    {
+        isVisible = false;
+
+        if (enemyTransform != null)
+            enemyTransform.gameObject.SetActive(false);
+
+        if (hideCoroutine != null)
+        {
+            StopCoroutine(hideCoroutine);
+            hideCoroutine = null;
+        }
+    }
+
+    private IEnumerator HideAfterDelay()
+    {
+        yield return new WaitForSeconds(maxVisibleDuration);
+        HideEnemy();
+        Debug.Log("ShadowEnemy: Hidden after timeout");
+    }
+
     public void TriggerScreenTakeover(System.Action onComplete)
     {
         StartCoroutine(ScreenTakeoverSequence(onComplete));
@@ -201,7 +266,7 @@ public class ShadowEnemy : MonoBehaviour
     public void ResetEnemy()
     {
         currentHealth = 1f;
-        UpdateEnemyAppearance();
+        HideEnemy();
         if (screenTakeoverImage != null)
             screenTakeoverImage.gameObject.SetActive(false);
     }
