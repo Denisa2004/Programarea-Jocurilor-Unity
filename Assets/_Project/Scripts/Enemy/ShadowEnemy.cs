@@ -25,7 +25,7 @@ public class ShadowEnemy : MonoBehaviour
     public float takeoverDuration = 1f;
 
     // Position offset
-    public Vector3 offsetFromPlayer = new Vector3(0f, 0f, 0f);
+    public Vector3 offsetFromPlayer = new Vector3(0f, -1f, -1f);
 
     private float currentHealth = 1f;
 
@@ -68,14 +68,9 @@ public class ShadowEnemy : MonoBehaviour
 
         // Get all SpriteRenderers from the enemy transform
         if (enemyTransform != null)
-        {
             enemySprites = enemyTransform.GetComponentsInChildren<SpriteRenderer>();
-            Debug.Log($"ShadowEnemy: Found {enemySprites.Length} sprite renderers in {enemyTransform.name}");
-        }
         else
-        {
             Debug.LogWarning("ShadowEnemy: enemyTransform is not assigned!");
-        }
 
         if (screenTakeoverImage != null)
             screenTakeoverImage.gameObject.SetActive(false);
@@ -125,7 +120,8 @@ public class ShadowEnemy : MonoBehaviour
 
         foreach (SpriteRenderer sprite in enemySprites)
         {
-            if (sprite == null) continue;
+            if (sprite == null) 
+                continue;
             Color color = sprite.color;
             color.a = alpha;
             sprite.color = color;
@@ -140,12 +136,15 @@ public class ShadowEnemy : MonoBehaviour
         float healthPercent = Mathf.Clamp01(currentHealth);
         float distance = Mathf.Lerp(minDistance, maxDistance, healthPercent);
 
-        // Place enemy in front of player (between player and camera)
-        Vector3 directionToCamera = (cameraTransform.position - playerTransform.position).normalized;
+        // Place enemy in front of player (between player and camera) - only on horizontal plane
+        Vector3 directionToCamera = cameraTransform.position - playerTransform.position;
+        directionToCamera.y = 0; // Keep only horizontal direction
+        directionToCamera.Normalize();
+
         Vector3 enemyPosition = playerTransform.position + directionToCamera * distance + offsetFromPlayer;
         enemyTransform.position = enemyPosition;
 
-        // Make 2D sprite face camera (rotate only around Y axis)
+        // Make 2D sprite face away from camera (show back to player)
         Vector3 lookDir = cameraTransform.position - enemyTransform.position;
         lookDir.y = 0;
         if (lookDir != Vector3.zero)
