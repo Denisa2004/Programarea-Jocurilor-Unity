@@ -7,7 +7,7 @@ namespace PowerUps
     {
         [Header("Multiplier Settings")]
         public int multiplier = 2;
-        public float duration = 10f;
+        public float duration = 5f;
 
         private void OnTriggerEnter(Collider other)
         {

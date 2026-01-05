@@ -102,7 +102,7 @@ public class MenuManager : MonoBehaviour
 
     public void StartGame()
     {
-        SceneManager.LoadScene("testscene");
+        SceneManager.LoadScene("mainscene");
     }
 
     public void SetResolution(int resolutionIndex)
