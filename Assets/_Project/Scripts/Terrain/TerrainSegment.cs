@@ -17,7 +17,7 @@ public class TerrainSegment : MonoBehaviour
         Transform startPoint = transform.Find("StartPoint");
         if (startPoint != null)
             return startPoint.position;
-        //la inceputul segmentului
+        // at the beginning of the segment
         return transform.position - transform.forward * 15f;
     }
 

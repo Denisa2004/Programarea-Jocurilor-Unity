@@ -6,8 +6,8 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
-    [Header("Audio - Setat automat din MenuManager")]
-    [Tooltip("Se va seta automat cand MenuManager exista in scena")]
+    [Header("Audio - Set automatically from MenuManager")]
+    [Tooltip("Will be set automatically when MenuManager exists in the scene")]
     public AudioMixer audioMixer;
 
     private const string MIXER_PARAM = "MasterVolume";
@@ -19,7 +19,7 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
-        // Singleton cu DontDestroyOnLoad
+        // Singleton with DontDestroyOnLoad
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -29,17 +29,17 @@ public class AudioManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Incarca volumul si starea de mute salvate
+        // Load the saved volume and mute state
         volumeBeforeMute = PlayerPrefs.GetFloat(SAVE_KEY_VOL, 1f);
         isMuted = PlayerPrefs.GetInt(SAVE_KEY_MUTE, 0) == 1;
 
-        // Aplica starea initiala
+        // Apply initial state
         ApplyMuteState();
     }
 
     private void Update()
     {
-        // Asculta tasta M pentru toggle mute/unmute
+        // Listen for M key to toggle mute/unmute
         if (Input.GetKeyDown(KeyCode.M))
         {
             ToggleMute();
@@ -52,7 +52,7 @@ public class AudioManager : MonoBehaviour
 
         if (isMuted)
         {
-            // Salveaza volumul curent inainte de mute
+            // Save current volume before mute
             float currentVol = PlayerPrefs.GetFloat(SAVE_KEY_VOL, 1f);
             if (currentVol > 0.0001f)
                 volumeBeforeMute = currentVol;
@@ -67,7 +67,7 @@ public class AudioManager : MonoBehaviour
             Debug.Log("🔊 Muzica UNMUTED");
         }
 
-        // Salveaza starea de mute
+        // Save mute state
         PlayerPrefs.SetInt(SAVE_KEY_MUTE, isMuted ? 1 : 0);
         PlayerPrefs.Save();
     }
@@ -76,15 +76,15 @@ public class AudioManager : MonoBehaviour
     {
         if (audioMixer == null)
         {
-            Debug.LogWarning("AudioManager: AudioMixer nu este setat! Seteaza-l manual sau lasa MenuManager sa il seteze.");
+            Debug.LogWarning("AudioManager: AudioMixer is not set! Set it manually or let MenuManager set it.");
             return;
         }
 
-        // Converteste volumul linear in decibeli
+        // Convert linear volume to decibels
         float volumeInDecibels = (volume > 0.0001f) ? Mathf.Log10(volume) * 20 : -80f;
         audioMixer.SetFloat(MIXER_PARAM, volumeInDecibels);
 
-        // Salveaza volumul doar daca nu suntem in mute
+        // Save volume only if we're not muted
         if (!isMuted && volume > 0.0001f)
         {
             PlayerPrefs.SetFloat(SAVE_KEY_VOL, volume);
@@ -114,7 +114,7 @@ public class AudioManager : MonoBehaviour
         return isMuted ? 0f : volumeBeforeMute;
     }
 
-    // Seteaza AudioMixer-ul (apelat de MenuManager)
+    // Set the AudioMixer (called by MenuManager)
     public void SetAudioMixer(AudioMixer mixer)
     {
         audioMixer = mixer;

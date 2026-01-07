@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-// script care sa reseteze playerul atunci cand cade de pe drum
+// script that resets the player when falling off the road
 public class OutOfBoundsTrigger : MonoBehaviour
 {
     [HideInInspector]
@@ -50,7 +50,7 @@ public class OutOfBoundsTrigger : MonoBehaviour
     {
         if (generator != null && generator.player != null)
         {
-            // primul segment ca respawn point
+            // first segment as respawn point
             var segments = FindObjectsByType<Transform>(FindObjectsSortMode.None);
             foreach (var segment in segments)
             {

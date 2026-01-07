@@ -2,8 +2,8 @@ using UnityEngine;
 using TMPro;
 
 /// <summary>
-/// Script care adauga automat shortcut-urile noi in Control Panel
-/// Ataseaza acest script la GameObject-ul Control Panel
+/// Script that automatically adds new shortcuts to Control Panel
+/// Attach this script to the Control Panel GameObject
 /// </summary>
 public class ControlPanelShortcutsUpdater : MonoBehaviour
 {
@@ -12,8 +12,8 @@ public class ControlPanelShortcutsUpdater : MonoBehaviour
     public string additionalShortcuts = "M - Mute/Unmute\nR - Restart";
 
     [Header("Settings")]
-    [Tooltip("Pozitia relativa fata de Control Panel (ajusteaza in Inspector!)")]
-    public Vector2 textPosition = new Vector2(0, -520); // Mai jos pe ecran
+    [Tooltip("Relative position to Control Panel (adjusted in Inspector)")]
+    public Vector2 textPosition = new Vector2(0, -520); // Lower on screen
     public float fontSize = 36f;
     public Color textColor = Color.black;
     public FontStyles fontStyle = FontStyles.Bold;
@@ -30,36 +30,36 @@ public class ControlPanelShortcutsUpdater : MonoBehaviour
 
     private void AddShortcutsText()
     {
-        // Verifica daca exista deja
+        // Check if it already exists
         if (shortcutTextObj != null)
         {
-            Debug.Log("Shortcut-urile au fost deja adaugate!");
+            Debug.Log("Shortcuts have already been added!");
             return;
         }
 
-        // Cauta Canvas-ul parinte
+        // Find the parent Canvas
         Canvas parentCanvas = GetComponentInParent<Canvas>();
         if (parentCanvas == null)
         {
-            Debug.LogError("ControlPanelShortcutsUpdater: Control Panel nu este copil al unui Canvas!");
+            Debug.LogError("ControlPanelShortcutsUpdater: Control Panel is not a child of a Canvas!");
             return;
         }
 
-        // Creaza un nou GameObject pentru shortcut-uri
+        // Create a new GameObject for shortcuts
         shortcutTextObj = new GameObject("ShortcutsText_Dynamic");
         shortcutTextObj.transform.SetParent(transform, false);
 
-        // Adauga componenta TextMeshProUGUI
+        // Add TextMeshProUGUI component
         TextMeshProUGUI shortcutText = shortcutTextObj.AddComponent<TextMeshProUGUI>();
-        
-        // Seteaza fontul
+
+        // Set the font
         if (customFont != null)
         {
             shortcutText.font = customFont;
         }
         else
         {
-            // Incearca sa gaseasca un font TMP implicit
+            // Try to find a default TMP font
             TextMeshProUGUI referenceText = GetComponentInChildren<TextMeshProUGUI>();
             if (referenceText != null && referenceText.font != null)
             {
@@ -67,34 +67,34 @@ public class ControlPanelShortcutsUpdater : MonoBehaviour
             }
             else
             {
-                // Foloseste fontul implicit TMP
+                // Use the default TMP font
                 shortcutText.font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
             }
         }
         
-        // Seteaza proprietatile textului
+        // Set text properties
         shortcutText.fontSize = fontSize;
         shortcutText.color = textColor;
         shortcutText.fontStyle = fontStyle;
         shortcutText.alignment = TextAlignmentOptions.Center;
         shortcutText.text = additionalShortcuts;
 
-        // Configurare RectTransform pentru pozitionare corecta
+        // Configure RectTransform for correct positioning
         RectTransform rectTransform = shortcutTextObj.GetComponent<RectTransform>();
         
-        // Ancoreaza in centru
+        // Anchor in center
         rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
         rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
         rectTransform.pivot = new Vector2(0.5f, 0.5f);
         
-        // Seteaza pozitia si dimensiunea
+        // Set position and size
         rectTransform.anchoredPosition = textPosition;
         rectTransform.sizeDelta = new Vector2(600, 150);
 
-        Debug.Log("? Shortcut-uri adaugate in Control Panel la pozitia: " + textPosition);
+        Debug.Log("Shortcuts added to Control Panel at position: " + textPosition);
     }
 
-    // Utility pentru a ajusta pozitia in timp real din Inspector
+    // Utility to adjust position in real time from Inspector
     private void OnValidate()
     {
         if (Application.isPlaying && shortcutTextObj != null)
@@ -116,7 +116,7 @@ public class ControlPanelShortcutsUpdater : MonoBehaviour
         }
     }
 
-    // Curata la destroy
+    // Clean up on destroy
     private void OnDestroy()
     {
         if (shortcutTextObj != null && Application.isPlaying)

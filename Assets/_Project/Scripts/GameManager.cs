@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        // Shortcut pentru Restart Rapid - tasta R
+        // Shortcut for Quick Restart - R key
         if (Input.GetKeyDown(KeyCode.R))
         {
             RestartLevel();
