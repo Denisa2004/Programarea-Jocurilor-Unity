@@ -17,12 +17,12 @@ public class SegmentGenerator : MonoBehaviour
     public float turnProbability = 0.3f;
 
     [Header("Manual Turn Offsets (Center to Center)")]
-    [Tooltip("Diferenta exacta de coordonate intre centrul piesei vechi si centrul piesei noi.")]
-    // Aici punem EXACT valorile cerute: 11 pe X, 19 pe Z
-    public Vector3 rightTurnOffset = new Vector3(11f, 0f, 19f); 
+    [Tooltip("Exact coordinate difference between the center of the old piece and the center of the new piece.")]
+    // Here we put EXACTLY the requested values: 11 on X, 19 on Z
+    public Vector3 rightTurnOffset = new Vector3(11f, 0f, 19f);
 
-    [Tooltip("Diferenta exacta de coordonate intre centrul piesei vechi si centrul piesei noi.")]
-    // Pentru stanga, X este negativ
+    [Tooltip("Exact coordinate difference between the center of the old piece and the center of the new piece.")]
+    // For left, X is negative
     public Vector3 leftTurnOffset = new Vector3(-11f, 0f, 19f);
 
     private static int generationCount = 0;
@@ -82,19 +82,19 @@ public class SegmentGenerator : MonoBehaviour
         
         generationCount++;
         
-        // Date necesare
+        // Required data
         TerrainSegment currentSegment = GetComponent<TerrainSegment>();
-        Quaternion currentRotation = transform.rotation; // Rotatia segmentului curent
-        Vector3 currentPosition = transform.position;    // Pozitia (centrul) segmentului curent
+        Quaternion currentRotation = transform.rotation; // Current segment rotation
+        Vector3 currentPosition = transform.position;    // Current segment position (center)
         
-        // Pentru calculul ExitPoint (necesar DOAR la mers drept)
+        // For ExitPoint calculation (necessary ONLY when going straight)
         Vector3 exitPosition = currentSegment != null ? currentSegment.GetExitPosition() : transform.position + transform.forward * 30f;
         Quaternion exitRotation = currentSegment != null ? currentSegment.GetExitRotation() : transform.rotation;
 
         bool shouldTurn = false;
         float turnAngle = 0f;
         
-        // Logica Random Turn
+        // Random Turn Logic
         if (generationCount >= minGenerations)
         {
             float randomValue = Random.Range(0f, 1f);
@@ -109,30 +109,29 @@ public class SegmentGenerator : MonoBehaviour
         GameObject segmentToSpawn = straightSegmentPrefab;
         if (segmentToSpawn == null) return;
         
-        // Calcul Rotatie Finala
+        // Calculate Final Rotation
         Quaternion finalRotation = exitRotation * Quaternion.Euler(0, turnAngle, 0);
         Vector3 spawnPosition;
 
-        // --- LOGICA MODIFICATA AICI ---
         if (shouldTurn)
         {
-            // CAZ VIRAJ: Calculam relativ la PIVOT (Centru), nu la ExitPoint.
-            // Asta garanteaza ca diferenta de coordonate este exact (11, 19) sau (-11, 19)
+            // TURN CASE: Calculate relative to PIVOT (Center), not to ExitPoint.
+            // This guarantees that the coordinate difference is exactly (11, 19) or (-11, 19)
             
             Vector3 localOffset = (turnAngle < 0) ? rightTurnOffset : leftTurnOffset;
             
-            // Rotim offset-ul in functie de orientarea segmentului curent
-            // Daca segmentul curent e rotit, si offset-ul se roteste cu el
+            // Rotate the offset based on the orientation of the current segment
+            // If the current segment is rotated, the offset rotates with it
             Vector3 worldOffset = currentRotation * localOffset;
             
-            // Adaugam offset-ul la pozitia CENTRALA a segmentului vechi
+            // Add the offset to the CENTRAL position of the old segment
             spawnPosition = currentPosition + worldOffset;
             
-            Debug.Log($"Viraj {(turnAngle < 0 ? "DREAPTA" : "STANGA")}. Vechi: {currentPosition}, Nou: {spawnPosition}. Diferenta: {spawnPosition - currentPosition}");
+            Debug.Log($"Turn {(turnAngle < 0 ? "RIGHT" : "LEFT")}. Old: {currentPosition}, New: {spawnPosition}. Difference: {spawnPosition - currentPosition}");
         }
         else
         {
-            // CAZ DREPT: Ramanem la logica StartPoint -> ExitPoint (care mergea bine)
+            // STRAIGHT CASE: the StartPoint -> ExitPoint logic 
             Transform startPoint = segmentToSpawn.transform.Find("StartPoint");
             Vector3 startPointLocalPos = startPoint != null ? startPoint.localPosition : new Vector3(0, 0, -15f);
             Vector3 startPointWorldOffset = finalRotation * startPointLocalPos;
@@ -141,10 +140,10 @@ public class SegmentGenerator : MonoBehaviour
         }
         // ------------------------------
         
-        // Instantiem segmentul
+        // Instantiate the segment
         GameObject newSegment = Instantiate(segmentToSpawn, spawnPosition, finalRotation);
         
-        // Corectie aliniere DOAR pentru mers drept (la viraj avem coordonatele fixe)
+        // Alignment correction ONLY for straight movement (for turns we have fixed coordinates)
         if (!shouldTurn)
         {
             Transform newStartPoint = newSegment.transform.Find("StartPoint");
@@ -158,7 +157,7 @@ public class SegmentGenerator : MonoBehaviour
             }
         }
         
-        // Setup noul generator
+        // Setup the new generator
         SegmentGenerator newGenerator = newSegment.GetComponent<SegmentGenerator>();
         if (newGenerator == null) newGenerator = newSegment.AddComponent<SegmentGenerator>();
         
@@ -170,13 +169,13 @@ public class SegmentGenerator : MonoBehaviour
         newGenerator.leftTurnOffset = this.leftTurnOffset;
     }
     
-    // Buton de Reset
+    // Reset Button
     [ContextMenu("Reset Offsets to 11/19")]
     public void ResetOffsets()
     {
         rightTurnOffset = new Vector3(11f, 0f, 19f);
         leftTurnOffset = new Vector3(-11f, 0f, 19f);
-        Debug.Log("Offsets resetate la X=11, Z=19!");
+        Debug.Log("Offsets reset to X=11, Z=19!");
         #if UNITY_EDITOR
         EditorUtility.SetDirty(this);
         #endif

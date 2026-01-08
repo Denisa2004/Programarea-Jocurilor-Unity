@@ -3,8 +3,8 @@ using TMPro;
 using UnityEngine.UI;
 
 /// <summary>
-/// Gestioneaza afisarea/ascunderea unui panel cu statistici detaliate
-/// Apasa TAB pentru a toggle stats panel-ul
+/// Manages the display/hiding of a panel with detailed statistics
+/// Press TAB to toggle the stats panel
 /// </summary>
 public class StatsPanel : MonoBehaviour
 {
@@ -15,10 +15,10 @@ public class StatsPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI statsText;
 
     [Header("Settings")]
-    [Tooltip("Tasta pentru toggle stats")]
+    [Tooltip("Key for toggle stats")]
     public KeyCode toggleKey = KeyCode.Tab;
     
-    [Tooltip("Rata de actualizare a stats-urilor (secunde)")]
+    [Tooltip("Stats update rate (seconds)")]
     public float updateRate = 0.5f;
 
     [Header("Optional: Show Individual Stats")]
@@ -47,7 +47,7 @@ public class StatsPanel : MonoBehaviour
 
     private void Start()
     {
-        // Ascunde panel-ul la inceput
+        // Hide the panel at the beginning
         if (statsPanel != null)
         {
             statsPanel.SetActive(false);
@@ -61,18 +61,18 @@ public class StatsPanel : MonoBehaviour
                 panelRect.anchorMax = new Vector2(1, 0);
                 panelRect.pivot = new Vector2(1, 0);
                 
-                // Seteaza o dimensiune potrivita pentru panel (mai inalt pentru tot continutul)
+                // Set an appropriate size for the panel (taller for all content)
                 panelRect.sizeDelta = new Vector2(300, 480);
-                
-                // Offset pentru margini
+
+                // Offset for margins
                 panelRect.anchoredPosition = new Vector2(-20, 20);
             }
             
-            // Centreaza textul in mijlocul panelului
+            // Center the text in the middle of the panel
             if (statsText != null)
             {
                 statsText.alignment = TextAlignmentOptions.Top;
-                // Adauga padding uniform
+                // Add uniform padding
                 statsText.margin = new Vector4(10, 10, 10, 10);
             }
         }
@@ -80,13 +80,13 @@ public class StatsPanel : MonoBehaviour
 
     private void Update()
     {
-        // Toggle stats panel cu tasta Tab
+        // Toggle stats panel with Tab key
         if (Input.GetKeyDown(toggleKey))
         {
             ToggleStatsPanel();
         }
 
-        // Actualizeaza stats-urile doar daca panel-ul e vizibil
+        // Update stats only if the panel is visible
         if (isVisible && Time.time >= nextUpdateTime)
         {
             UpdateStatsDisplay();
@@ -133,7 +133,7 @@ public class StatsPanel : MonoBehaviour
             var scoreMgr = FindObjectOfType<ScoreManager>();
             if (scoreMgr != null)
             {
-                // Folosim reflection sau o proprietate publica pentru a accesa currentScore
+                // Use reflection or a public property to access currentScore
                 int score = GetCurrentScore();
                 int highScore = PlayerPrefs.GetInt("HighScore", 0);
                 
@@ -206,7 +206,7 @@ public class StatsPanel : MonoBehaviour
         var scoreMgr = FindObjectOfType<ScoreManager>();
         if (scoreMgr == null) return 0;
 
-        // Cautam field-ul privat 'currentScore' prin reflection
+        // Search for the private 'currentScore' field through reflection
         var field = typeof(ScoreManager).GetField("currentScore", 
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         
@@ -232,7 +232,7 @@ public class StatsPanel : MonoBehaviour
         return bar;
     }
 
-    // Metode publice pentru toggle individual
+    // Public methods for individual toggle
     public void Show()
     {
         isVisible = true;

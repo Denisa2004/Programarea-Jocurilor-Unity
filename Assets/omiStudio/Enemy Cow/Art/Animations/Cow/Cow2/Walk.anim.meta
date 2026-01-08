@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 407fdb28abb06a94f838f7ad860c05c4
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 227480
+  packageName: EnemyCow
+  packageVersion: 1.0
+  assetPath: Assets/omiStudio/Enemy Cow/Art/Animations/Cow/Cow2/Walk.anim
+  uploadId: 518482

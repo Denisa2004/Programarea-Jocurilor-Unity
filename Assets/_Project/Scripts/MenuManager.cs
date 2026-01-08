@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.Audio; // pentru gestionarea sunetului
-using UnityEngine.SceneManagement;// pentru schimbatul scenelor
+using UnityEngine.Audio; // for sound management
+using UnityEngine.SceneManagement; // for changing scenes
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
@@ -21,11 +21,12 @@ public class MenuManager : MonoBehaviour
     public GameObject ShopPanel;
     [Header("Control Panel")]
     public GameObject controlPanel;
+    public GameObject controlPanelButton;
     
 
     Resolution[] resolutions;
 
-    [System.Serializable] // Asta face ca lista sa apara in Inspector
+    [System.Serializable] // This makes the list appear in Inspector
     public class RezolutiePersonalizata
     {
         public string numeAfisat; 
@@ -37,38 +38,38 @@ public class MenuManager : MonoBehaviour
     
     void Start()
     {
-        // Creeaza sau gaseste AudioManager si seteaza AudioMixer-ul
+        // Create or find AudioManager and set the AudioMixer
         if (AudioManager.Instance == null)
         {
             GameObject audioMgrObj = new GameObject("AudioManager");
             audioMgrObj.AddComponent<AudioManager>();
         }
         
-        // Seteaza AudioMixer-ul pentru AudioManager
+        // Set the AudioMixer for AudioManager
         if (AudioManager.Instance != null && Volume != null)
         {
             AudioManager.Instance.SetAudioMixer(Volume);
         }
 
         InitResolutions();
-        // Incarcam volumul salvat. 
+        // Load the saved volume
         float savedVolume = PlayerPrefs.GetFloat(SAVE_KEY_VOL, 1f);
-        // Actualizam pozitia slider-ului
+        // Update the slider position
         musicSlider.value = savedVolume;
-        // Aplicam volumul salvat in AudioMixer
+        // Apply the saved volume in AudioMixer
         SetMusicVolume(savedVolume);
     }
 
     public void SetMusicVolume(float volume)
     {
-        // Foloseste AudioManager daca exista
+        // Use AudioManager if it exists
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.SetVolume(volume);
         }
         else
         {
-            // Fallback la controlul direct al mixer-ului
+            // Fallback to direct mixer control
             float volumeInDecibels = (volume > 0.0001f) ? Mathf.Log10(volume) * 20 : -80f;
             Volume.SetFloat(MIXER_PARAM, volumeInDecibels);
             PlayerPrefs.SetFloat(SAVE_KEY_VOL, volume);
@@ -83,7 +84,7 @@ public class MenuManager : MonoBehaviour
         List<string> options = new List<string>();
         int currentResolutionIndex = 0;
 
-        // Trecem prin lista si vedem daca rezolutia curenta se potriveste cu una din lista
+        // Go through the list and check if current resolution matches one from the list
         for (int i = 0; i < listaRezolutii.Count; i++)
         {
             options.Add(listaRezolutii[i].numeAfisat);
@@ -106,7 +107,7 @@ public class MenuManager : MonoBehaviour
 
     public void SetResolution(int resolutionIndex)
     {
-        // Luam rezolutia din lista
+        // Get the resolution from the list
         RezolutiePersonalizata rezolutieAleasa = listaRezolutii[resolutionIndex];
 
         Screen.SetResolution(rezolutieAleasa.width, rezolutieAleasa.height, Screen.fullScreen);
@@ -131,21 +132,27 @@ public class MenuManager : MonoBehaviour
         Application.Quit();
         Debug.Log("Jocul a fost inchis");
     }
-    // activeaza SettingsPanel care e ascuns initial in editor
-    public void OpenSettings() { SettingsPanel.SetActive(true); }
-    // dezactiveaza SettingsPanel
+    // activates SettingsPanel which is initially hidden in editor
+    public void OpenSettings()
+    {
+        SettingsPanel.SetActive(true);
+        SettingsPanel.transform.SetAsLastSibling(); // ensures settings panel renders above other UI elements
+    }
+    // deactivates SettingsPanel
     public void CloseSettings() { SettingsPanel.SetActive(false); }
 
     //activates shopPanel which is hidden initially in the editor
     public void OpenShop()
     {
         if (ShopPanel != null) ShopPanel.SetActive(true);
+        if (controlPanelButton != null) controlPanelButton.SetActive(false);
     }
 
     //deactivates shopPanel
     public void CloseShop()
     {
         if (ShopPanel != null) ShopPanel.SetActive(false);
+        if (controlPanelButton != null) controlPanelButton.SetActive(true);
     }
 
     public void ShowControlPanel()

@@ -6,16 +6,16 @@ public class MusicManager : MonoBehaviour
 
     void Awake()
     {
-        // Verificăm dacă există deja o instanță a acestui MusicManager
+        // Check if an instance of this MusicManager already exists
         if (instance == null)
         {
             instance = this;
-            // Această comandă este magică: nu distruge obiectul la încărcarea unei scene noi
+            // This command is magical: it doesn't destroy the object when loading a new scene
             DontDestroyOnLoad(gameObject);
         }
         else
         {
-            // Dacă există deja un manager (de exemplu, ne-am întors în meniu), îl distrugem pe cel nou
+            // If a manager already exists (for example, we went back to menu), we destroy the new one
             Destroy(gameObject);
         }
     }

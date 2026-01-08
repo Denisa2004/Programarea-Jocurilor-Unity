@@ -1,22 +1,22 @@
 using UnityEngine;
 
-// Un segment i.e. StraightSegment are NewSectionTrigger care are un Box Collider care se afla la mijlocul segmentului
+// A segment (e.g. StraightSegment) has NewSectionTrigger which has a Box Collider located at the middle of the segment
 
-// Scopul acestui Script e ca atunci cand Collider-ul jucatorului interactioneaza cu collider-ul platformei, generam segment nou
+// The purpose of this Script is that when the player's Collider interacts with the platform's collider, we generate a new segment
 
 public class SectionTrigger : MonoBehaviour
 {
     public void OnTriggerEnter(Collider other)
     {
-        // Debug: verificam ce obiect a intrat in trigger
+        // Debug: check what object entered the trigger
         Debug.Log($"SectionTrigger: Object entered trigger - {other.gameObject.name}, Tag: {other.gameObject.tag}");
         
-        // Verificam daca jucatorul a intrat in trigger
+        // Check if the player entered the trigger
         if (other.gameObject.CompareTag("Player"))
         {
             Debug.Log("SectionTrigger: Player detected, attempting to generate next segment...");
             
-            // Obtinem SegmentGenerator de la segmentul curent (parintele trigger-ului)
+            // Get SegmentGenerator from the current segment (the trigger's parent)
             Transform segmentParent = transform.parent;
             Debug.Log($"SectionTrigger: Parent is {(segmentParent != null ? segmentParent.name : "NULL")}");
             
@@ -25,14 +25,14 @@ public class SectionTrigger : MonoBehaviour
                 Debug.Log($"SectionTrigger: Checking for SegmentGenerator on {segmentParent.name}...");
                 SegmentGenerator generator = segmentParent.GetComponent<SegmentGenerator>();
                 
-                // Daca nu exista, incercam sa o adaugam automat
+                // If it doesn't exist, we try to add it automatically
                 if (generator == null)
                 {
                     Debug.Log($"SectionTrigger: SegmentGenerator not found, adding it to {segmentParent.name}");
                     generator = segmentParent.gameObject.AddComponent<SegmentGenerator>();
                     Debug.Log($"SectionTrigger: SegmentGenerator added: {(generator != null ? "SUCCESS" : "FAILED")}");
                     
-                    // Asiguram ca avem si TerrainSegment
+                    // Ensure we also have TerrainSegment
                     TerrainSegment terrainSegment = segmentParent.GetComponent<TerrainSegment>();
                     if (terrainSegment == null)
                     {
@@ -46,22 +46,22 @@ public class SectionTrigger : MonoBehaviour
                     Debug.Log($"SectionTrigger: SegmentGenerator found on {segmentParent.name}");
                 }
                 
-                // Re-verificam dupa adaugare
+                // Re-check after adding
                 generator = segmentParent.GetComponent<SegmentGenerator>();
                 if (generator != null)
                 {
-                    // Verificam daca prefab-urile sunt asignate
+                    // Check if prefabs are assigned
                     if (generator.straightSegmentPrefab == null)
                     {
                         Debug.LogWarning("SectionTrigger: straightSegmentPrefab is not assigned! Please assign prefabs in Inspector.");
                         return;
                     }
                     
-                    // Generam urmatorul segment folosind logica din SegmentGenerator
+                    // Generate the next segment using the logic from SegmentGenerator
                     generator.GenerateNextSegment();
                     Debug.Log("SectionTrigger: Segment generation called successfully!");
                     
-                    // Rotim jucatorul pentru a se alinia cu directia segmentului
+                    // Rotate the player to align with the segment direction
                     RotatePlayerToSegmentDirection(other.gameObject, segmentParent);
                 }
                 else
@@ -78,17 +78,17 @@ public class SectionTrigger : MonoBehaviour
     
     private void RotatePlayerToSegmentDirection(GameObject player, Transform segment)
     {
-        // Obtinem directia segmentului (forward direction)
+        // Get the segment direction (forward direction)
         Vector3 segmentForward = segment.forward;
         
-        // Obtinem componenta PlayerController
+        // Get the PlayerController component
         PlayerController playerController = player.GetComponent<PlayerController>();
         if (playerController != null)
         {
-            // Rotim jucatorul smooth pentru a se alinia cu directia segmentului
+            // Smoothly rotate the player to align with the segment direction
             Quaternion targetRotation = Quaternion.LookRotation(segmentForward);
             
-            // Folosim coroutine pentru rotire smooth
+            // Use coroutine for smooth rotation
             StartCoroutine(SmoothRotatePlayer(player.transform, targetRotation));
             
             Debug.Log($"SectionTrigger: Rotating player smoothly to match segment direction: {segmentForward}");
@@ -98,7 +98,7 @@ public class SectionTrigger : MonoBehaviour
     private System.Collections.IEnumerator SmoothRotatePlayer(Transform playerTransform, Quaternion targetRotation)
     {
         Quaternion startRotation = playerTransform.rotation;
-        float duration = 0.2f; // Durata rotirii in secunde (redusa pentru mai putina miscare)
+        float duration = 0.2f; // Rotation duration in seconds (reduced for less movement)
         float elapsed = 0f;
         
         while (elapsed < duration)
@@ -109,7 +109,7 @@ public class SectionTrigger : MonoBehaviour
             yield return null;
         }
         
-        // Asiguram ca rotatia finala este exacta
+        // Ensure the final rotation is exact
         playerTransform.rotation = targetRotation;
     }
 }

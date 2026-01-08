@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        // Shortcut pentru Restart Rapid - tasta R
+        // Shortcut for Quick Restart - R key
         if (Input.GetKeyDown(KeyCode.R))
         {
             RestartLevel();
@@ -49,11 +49,24 @@ public class GameManager : MonoBehaviour
             scoreMgr.StopScoringAndSave();
         }
 
-        // Pause the game and show the Game Over UI
+        // Pause the game
         Time.timeScale = 0f;
 
-        if (gameOverPanel != null)
-            gameOverPanel.SetActive(true);
+        // Trigger shadow enemy screen takeover, then show game over UI
+        if (ShadowEnemy.Instance != null)
+        {
+            ShadowEnemy.Instance.TriggerScreenTakeover(() =>
+            {
+                if (gameOverPanel != null)
+                    gameOverPanel.SetActive(true);
+            });
+        }
+        else
+        {
+            // No shadow enemy, show game over directly
+            if (gameOverPanel != null)
+                gameOverPanel.SetActive(true);
+        }
     }
 
     public void RestartLevel()
