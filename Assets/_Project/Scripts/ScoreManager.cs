@@ -24,7 +24,7 @@ public class ScoreManager : MonoBehaviour
 
     private void Start()
     {
-        // Load saved high score
+        // Load saved high score (folosit doar la Game Over / Stats)
         highScore = PlayerPrefs.GetInt(HIGH_SCORE_KEY, 0);
 
         nextThreshold = pointsStep;
@@ -67,6 +67,8 @@ public class ScoreManager : MonoBehaviour
             PlayerPrefs.Save();
         }
 
+        // La Game Over, UI-ul de in?game NU mai afi?eaz? high score,
+        // game over panel-ul se ocup? de afi?are.
         UpdateUI();
     }
 
@@ -87,8 +89,11 @@ public class ScoreManager : MonoBehaviour
         if (scoreText == null)
             return;
 
-        scoreText.text =
-            "Score: " + (int)currentScore +
-            "\nHigh Score: " + highScore;
+        // DOAR scorul curent, ca în screenshot-ul dorit
+        scoreText.text = "Score: " + (int)currentScore;
     }
+
+    // Op?ional: metode publice pentru GameOver UI / StatsPanel
+    public int GetCurrentScoreInt() => (int)currentScore;
+    public int GetHighScore() => highScore;
 }

@@ -11,8 +11,6 @@ public class CoinManager : MonoBehaviour
     public int CurrentRunCoins { get; private set; }
 
     // total coins saved between sessions
-
-
     public int TotalCoins { get; private set; }
     
     private int coinMultiplier = 1;
@@ -66,6 +64,7 @@ public class CoinManager : MonoBehaviour
 
         UpdateUI();
     }
+
     public bool SpendCoins(int amount)
     {
         if (TotalCoins < amount)
@@ -86,9 +85,8 @@ public class CoinManager : MonoBehaviour
     {
         if (coinsText != null)
         {
-            coinsText.text =
-                "Run Coins: " + CurrentRunCoins +
-                "\nTotal Coins: " + TotalCoins;
+            // DOAR coins pentru run-ul curent
+            coinsText.text = "Coins: " + CurrentRunCoins;
         }
     }
 }

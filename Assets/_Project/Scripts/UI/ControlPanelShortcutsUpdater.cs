@@ -1,4 +1,5 @@
-using UnityEngine;
+/*
+ * using UnityEngine;
 using TMPro;
 
 /// <summary>
@@ -125,3 +126,4 @@ public class ControlPanelShortcutsUpdater : MonoBehaviour
         }
     }
 }
+*/
