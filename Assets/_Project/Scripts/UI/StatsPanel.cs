@@ -24,7 +24,6 @@ public class StatsPanel : MonoBehaviour
     [Header("Optional: Show Individual Stats")]
     public bool showScore = true;
     public bool showCoins = true;
-    public bool showHealth = true;
     public bool showSpeed = true;
     public bool showFPS = true;
     public bool showPlayTime = true;
@@ -52,20 +51,20 @@ public class StatsPanel : MonoBehaviour
         {
             statsPanel.SetActive(false);
             
-            // Pozitioneaza panel-ul in coltul dreapta-jos
+            // Pozitioneaza panel-ul in coltul stanga-jos
             RectTransform panelRect = statsPanel.GetComponent<RectTransform>();
             if (panelRect != null)
             {
-                // Ancora in coltul dreapta-jos
-                panelRect.anchorMin = new Vector2(1, 0);
-                panelRect.anchorMax = new Vector2(1, 0);
-                panelRect.pivot = new Vector2(1, 0);
+                // Ancora in coltul stanga-jos
+                panelRect.anchorMin = new Vector2(0, 0);
+                panelRect.anchorMax = new Vector2(0, 0);
+                panelRect.pivot = new Vector2(0, 0);
                 
-                // Set an appropriate size for the panel (taller for all content)
-                panelRect.sizeDelta = new Vector2(300, 480);
+                // Set an appropriate size for the panel
+                panelRect.sizeDelta = new Vector2(300, 400);
 
-                // Offset for margins
-                panelRect.anchoredPosition = new Vector2(-20, 20);
+                // Offset for margins (left and bottom)
+                panelRect.anchoredPosition = new Vector2(20, 20);
             }
             
             // Center the text in the middle of the panel
@@ -106,11 +105,11 @@ public class StatsPanel : MonoBehaviour
         if (isVisible)
         {
             UpdateStatsDisplay();
-            Debug.Log("?? Stats Panel SHOWN (press Tab to hide)");
+            Debug.Log("? Stats Panel SHOWN (press Tab to hide)");
         }
         else
         {
-            Debug.Log("?? Stats Panel HIDDEN");
+            Debug.Log("? Stats Panel HIDDEN");
         }
     }
 
@@ -150,16 +149,6 @@ public class StatsPanel : MonoBehaviour
             sb.AppendLine($"<color=#FFD700>COINS</color>");
             sb.AppendLine($"  This Run: <b>{CoinManager.Instance.CurrentRunCoins}</b>");
             sb.AppendLine($"  Total Saved: <b>{CoinManager.Instance.TotalCoins}</b>\n");
-        }
-
-        // Health Stats
-        if (showHealth && PlayerHealth.Instance != null)
-        {
-            float healthPercent = PlayerHealth.Instance.health * 100f;
-            string healthBar = CreateHealthBar(PlayerHealth.Instance.health);
-            
-            sb.AppendLine($"<color=#FF6B6B>HEALTH</color>");
-            sb.AppendLine($"  {healthBar} <b>{healthPercent:F0}%</b>\n");
         }
 
         // Speed Stats
@@ -217,19 +206,6 @@ public class StatsPanel : MonoBehaviour
         }
         
         return 0;
-    }
-
-    private string CreateHealthBar(float healthPercent)
-    {
-        int barLength = 10;
-        int filledBars = Mathf.RoundToInt(healthPercent * barLength);
-        
-        string bar = "";
-        for (int i = 0; i < barLength; i++)
-        {
-            bar += i < filledBars ? "?" : "?";
-        }
-        return bar;
     }
 
     // Public methods for individual toggle
