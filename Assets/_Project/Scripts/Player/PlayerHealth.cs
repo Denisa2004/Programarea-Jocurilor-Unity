@@ -32,6 +32,9 @@ public class PlayerHealth : MonoBehaviour
     public event Action<float> OnHealthChanged;
 
     private Rigidbody rb;
+    private AudioSource audioSource;
+    private AvatarAudioRuntime audioRuntime;
+
 
     private struct State
     {
@@ -60,6 +63,12 @@ public class PlayerHealth : MonoBehaviour
         Instance = this;
 
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+            Debug.LogWarning("PlayerHealth: No AudioSource found on Player. Damage sounds won't play.");
+
+        audioRuntime = GetComponent<AvatarAudioRuntime>();
+
         if (rb == null)
             Debug.LogWarning("PlayerHealth: No Rigidbody found. Rewind will still move Transform but won't restore velocity.");
     }
@@ -173,11 +182,28 @@ public class PlayerHealth : MonoBehaviour
         // Camera feedback
         if (CameraShake.Instance != null) CameraShake.Instance.Shake();
 
-        // Audio feedback
-        if (damageSound != null)
+        //audio feedback (avatar-specific, with fallback)
+        if (audioSource != null)
         {
-            AudioSource.PlayClipAtPoint(damageSound, transform.position);
+            AudioClip clipToPlay = null;
+
+            //1) Prefer: avatar audio
+            if (audioRuntime != null &&
+                audioRuntime.Current != null &&
+                audioRuntime.Current.impactClip != null)
+            {
+                clipToPlay = audioRuntime.Current.impactClip;
+            }
+            //2) Fallback: inspector sound(adica cat-hurt-sound)
+            else if (damageSound != null)
+            {
+                clipToPlay = damageSound;
+            }
+
+            if (clipToPlay != null)
+                audioSource.PlayOneShot(clipToPlay);
         }
+
 
         // Rewind player a few seconds back
         RestoreToSecondsAgo(rewindSeconds);
