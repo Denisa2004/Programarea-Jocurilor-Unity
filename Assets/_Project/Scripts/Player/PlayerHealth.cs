@@ -34,6 +34,7 @@ public class PlayerHealth : MonoBehaviour
     private Rigidbody rb;
     private AudioSource audioSource;
     private AvatarAudioRuntime audioRuntime;
+    private PlayerFXController fx;
 
 
     private struct State
@@ -63,6 +64,8 @@ public class PlayerHealth : MonoBehaviour
         Instance = this;
 
         rb = GetComponent<Rigidbody>();
+        fx = GetComponent<PlayerFXController>();
+
         audioSource = GetComponent<AudioSource>();
         if (audioSource == null)
             Debug.LogWarning("PlayerHealth: No AudioSource found on Player. Damage sounds won't play.");
@@ -181,6 +184,9 @@ public class PlayerHealth : MonoBehaviour
 
         // Camera feedback
         if (CameraShake.Instance != null) CameraShake.Instance.Shake();
+
+        fx?.PlayHitFX(transform.position, Vector3.up);
+
 
         //audio feedback (avatar-specific, with fallback)
         if (audioSource != null)

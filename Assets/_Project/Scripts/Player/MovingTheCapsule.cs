@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveRead;
     private Rigidbody rb;
     public GameObject playerCamera;
+    private PlayerFXController fx;
+
 
     private bool isJumpHeld = false;     // If the jump key (W/Space) is pressed
     private float speedMultiplier = 1f;  // Speed multiplier (e.g. power-ups)
@@ -40,6 +42,8 @@ public class PlayerController : MonoBehaviour
         rotateRightAction = InputSystem.actions.FindAction("RotateRight");
 
         rb = GetComponent<Rigidbody>();
+        fx = GetComponent<PlayerFXController>();
+
     }
 
     // Method called when object is activated (prevents MissingReferenceException)
@@ -71,6 +75,8 @@ public class PlayerController : MonoBehaviour
         // Start rotation coroutine only if we're not already rotating and object exists
         if (this != null && !isRotating && gameObject.activeInHierarchy)
         {
+            int dir = angle < 0 ? -1 : 1;
+            fx?.PlayTurnFX(dir);
             StartCoroutine(RotatePlayer(angle));
         }
     }
@@ -87,6 +93,8 @@ public class PlayerController : MonoBehaviour
         {
             isJumping = true;
             jumpStartY = transform.position.y;
+            fx?.PlayJumpFX();       //boing + puff la sol
+            fx?.StartJumpTrail();
         }
 
         // Reload fuel when we hit the ground and no longer try to jump
@@ -94,6 +102,8 @@ public class PlayerController : MonoBehaviour
         {
             currentFuel = maxFlightTime;
             isJumping = false;
+            fx?.StopJumpTrail();
+
         }
 
         // Update camera position to follow the player (fixed offset)
@@ -117,7 +127,11 @@ public class PlayerController : MonoBehaviour
             // Consume fuel based on time elapsed
             currentFuel -= Time.fixedDeltaTime;
         }
-
+        else
+        {
+            if (!IsGrounded())
+                fx?.StopJumpTrail(); //nu mai urcam
+        }
         // Managing forward speed
         Vector3 currentVelocity = rb.linearVelocity;
         float currentSpeedForward = Vector3.Dot(currentVelocity, transform.forward);

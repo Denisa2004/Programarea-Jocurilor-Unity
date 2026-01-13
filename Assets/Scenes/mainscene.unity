@@ -2493,6 +2493,37 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &1170861035
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1170861036}
+  m_Layer: 6
+  m_Name: GroundFXPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1170861036
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1170861035}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1235005350}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1231541431
 GameObject:
   m_ObjectHideFlags: 0
@@ -2548,6 +2579,7 @@ GameObject:
   - component: {fileID: 1235005342}
   - component: {fileID: 1235005351}
   - component: {fileID: 1235005352}
+  - component: {fileID: 1235005353}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -2779,6 +2811,8 @@ Transform:
   m_Children:
   - {fileID: 996836983}
   - {fileID: 13988208}
+  - {fileID: 1170861036}
+  - {fileID: 2064412494}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1235005351
@@ -2891,6 +2925,34 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1235005353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1235005341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e005282a470dcee4db8a507755d92aff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  modelTransform: {fileID: 996836983}
+  groundFxPoint: {fileID: 1170861036}
+  trailAnchor: {fileID: 2064412494}
+  sfxSource: {fileID: 1235005352}
+  jumpDustPrefab: {fileID: 8173263288047868534, guid: 9bd0881199845e14c98d41ddc858f922, type: 3}
+  turnDustPrefab: {fileID: 1125531153604577727, guid: d6a742a81d88e4d4eb1b3ddfb4914fa7, type: 3}
+  hitStarsPrefab: {fileID: 4646375644608781988, guid: dcdd7484758839e41b8ceb07b97659e5, type: 3}
+  jumpBoingClip: {fileID: 8300000, guid: ae35ccb74ca36d1439e533b77ddea0df, type: 3}
+  turnSwishClip: {fileID: 8300000, guid: fb334bfb94788ec4f94f3bb762ec586d, type: 3}
+  leanAngle: 15
+  leanInTime: 0.08
+  leanOutTime: 0.12
+  pitchRange: {x: 0.95, y: 1.05}
+  trailDuration: 0.18
+  trailStartWidth: 0.12
+  trailEndWidth: 0
 --- !u!1 &1312882555
 GameObject:
   m_ObjectHideFlags: 0
@@ -4522,6 +4584,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2049998499}
   m_CullTransparentMesh: 1
+--- !u!1 &2064412493
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2064412494}
+  m_Layer: 6
+  m_Name: TrailAnchor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2064412494
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2064412493}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1235005350}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2076817563
 GameObject:
   m_ObjectHideFlags: 0
